@@ -20,7 +20,10 @@ class _AppSearchFieldState extends State<AppSearchField> {
     final isKeyboardOpened = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     print("rebuild"); //TODO: check  why  3x rebuilds
-    return DecoratedBox(
+    return Container(
+      width: width,
+      alignment: .center,
+      height: 96 + 24,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: .topCenter,
@@ -32,7 +35,7 @@ class _AppSearchFieldState extends State<AppSearchField> {
       child: Padding(
         padding: const .all(24.0),
         child: AnimatedContainer(
-          duration: Durations.medium3,
+          duration: Durations.short3,
           width: (isKeyboardOpened ? .85 : .45) * width,
           height: 48,
           decoration: ShapeDecoration(

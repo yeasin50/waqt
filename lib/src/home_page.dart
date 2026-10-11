@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'app_service.dart';
+import 'widgets/app_option_bottom_sheet.dart';
 import 'widgets/app_search_field.dart';
+import 'widgets/app_tile.dart';
 import 'widgets/clock_view.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,14 +27,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: PageView(
-        onPageChanged: (page) {
-          if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
-        },
-        children: [
-          _HomeView(),
-          _AppListView(service: service),
-        ],
+      child: AppProvider(
+        service: service,
+        child: PageView(
+          onPageChanged: (page) {
+            if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
+          },
+          children: [_HomeView(), _AppListView()],
+        ),
       ),
     );
   }
@@ -102,22 +104,21 @@ class _HomeView extends StatelessWidget {
 }
 
 class _AppListView extends StatefulWidget {
-  const new({required this.service});
-
-  final AppService service;
+  const new();
 
   @override
   State<_AppListView> createState() => _AppListViewState();
 }
 
 class _AppListViewState extends State<_AppListView> {
-  late List<AppInfo> filteredApps = widget.service.apps;
+  late final provider = AppProvider.of(context).service;
+  late List<AppInfo> filteredApps = provider.apps;
 
   void onSearch(String v) {
     if (v.trim().isEmpty) {
-      filteredApps = widget.service.apps;
+      filteredApps = provider.apps;
     } else {
-      filteredApps = widget.service.apps
+      filteredApps = provider.apps
           .where((e) => e.name.toLowerCase().contains(v.toLowerCase()))
           .toList();
     }
@@ -130,8 +131,7 @@ class _AppListViewState extends State<_AppListView> {
     final style = TextTheme.of(context);
 
     return Scaffold(
-      floatingActionButtonLocation:
-          .centerDocked, //TODO: might create custom location
+      floatingActionButtonLocation: .centerDocked, //TODO: might create custom location or might convert into stack
       floatingActionButton: AppSearchField(onChanged: onSearch),
       body: SafeArea(
         child: CustomScrollView(
@@ -139,37 +139,40 @@ class _AppListViewState extends State<_AppListView> {
             SliverList.list(
               children: [
                 SizedBox(
-                  height: 75,
-                  child: Row(
-                    mainAxisAlignment: .spaceBetween,
-                    children: [
-                      SizedBox(width: 48),
-                      Text(
-                        "All Apps",
-                        style: style.bodyLarge?.copyWith(),
-                        textAlign: .center,
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.settings_outlined),
-                        color: Colors.grey,
-                      ),
-                    ],
-                  ),
-                ),
-                ...filteredApps.map(
-                  (app) => InkWell(
-                    onTap: () => widget.service.launchApp(app),
-                    child: Padding(
-                      padding: const .all(12.0),
-                      child: Text(
-                        app.name,
-                        textAlign: .center,
-                        style: style.bodyLarge?.copyWith(),
-                      ),
+                  height: 220,
+                  child: Align(
+                    alignment: Alignment(0, .25),
+                    child: Row(
+                      mainAxisAlignment: .spaceBetween,
+                      children: [
+                        SizedBox(width: 48),
+                        Text(
+                          "All Apps",
+                          style: style.headlineMedium?.copyWith(),
+                          textAlign: .center,
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.settings_outlined),
+                          color: Colors.grey,
+                        ),
+                      ],
                     ),
                   ),
                 ),
+                ...filteredApps.map(
+                  (app) => AppTile(
+                    title: app.name,
+                    onTap: () => provider.launchApp(app),
+                    onLongPress: () => AppOptionBottomSheet.show(
+                      context: context,
+                      appInfo: app,
+                      service: provider,
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 96 + 24),
               ],
             ),
           ],

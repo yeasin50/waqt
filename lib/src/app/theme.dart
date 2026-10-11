@@ -8,6 +8,7 @@ final class AppTheme {
       surface: Color(0xFF101010),
       primary: Colors.white,
     ),
+    dividerColor: Colors.grey,
     textTheme: TextTheme(
       headlineLarge: TextStyle(
         fontSize: 68,
@@ -15,7 +16,8 @@ final class AppTheme {
         letterSpacing: -3,
       ),
       bodyLarge: TextStyle(
-        fontSize: 17,
+        fontSize: 22,
+        fontWeight: .w400,
         color: Colors.white.withValues(alpha: 0.75),
       ),
       bodyMedium: TextStyle(

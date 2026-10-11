@@ -52,6 +52,48 @@ class AppService extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> openAppInfo(AppInfo app) async {
+    try {
+      await _channel.invokeMethod('openAppInfo', app.packageName);
+    } catch (e) {
+      log("failed to open app info ${e.toString()}");
+      _err = "failed to open app info ${app.name}";
+      notifyListeners();
+    }
+  }
+
+  // FIXME: removed isn't working
+  Future<void> unistallApp(AppInfo app) async {
+    try {
+      await _channel.invokeMethod('uninstallApp', app.packageName);
+      print("app ${app.name} removed");
+    } catch (e) {
+      print("failed to unistallApp ${e.toString()}");
+      _err = "failed to unistall app ${app.name}";
+      notifyListeners();
+    }
+  }
+
+  Future<void> lockScreen() async {
+    try {
+      await _channel.invokeMethod('lockScreen');
+    } catch (e) {
+      log("failed to lock screen ${e.toString()}");
+      _err = "please grant the permission";
+      notifyListeners();
+    }
+  }
+
+  Future<void> requestLockPermission() async {
+    try {
+      await _channel.invokeMethod('requestLockPermission');
+    } catch (e) {
+      log("failed to request lock permission ${e.toString()}");
+      _err = "failed to request lock permission";
+      notifyListeners();
+    }
+  }
 }
 
 class AppInfo {
@@ -61,4 +103,24 @@ class AppInfo {
 
   @override
   String toString() => "name $name pkg: $packageName";
+}
+
+class AppProvider extends InheritedWidget {
+  const AppProvider({super.key, required super.child, required this.service});
+
+  final AppService service;
+
+  static AppProvider of(BuildContext context) {
+    final AppProvider? result = maybeOf(context);
+    assert(result != null, 'No AppProvider found in context');
+    return result!;
+  }
+
+  static AppProvider? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AppProvider>();
+  }
+
+  @override
+  bool updateShouldNotify(AppProvider oldWidget) =>
+      service != oldWidget.service;
 }
