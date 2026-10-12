@@ -7,11 +7,13 @@ class AppTile extends StatelessWidget {
     required this.onTap,
     this.onLongPress,
     this.titleAlign = .center,
+    this.tralling,
   });
 
   final String title;
   final TextAlign titleAlign;
   final VoidCallback? onTap, onLongPress;
+  final Widget? tralling;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +24,17 @@ class AppTile extends StatelessWidget {
       onLongPress: onLongPress,
       child: Padding(
         padding: const .symmetric(vertical: 12),
-        child: Text(
-          title,
-          textAlign: titleAlign,
-          style: style.bodyLarge?.copyWith(),
+        child: Row(
+          mainAxisAlignment: .center,
+          spacing: 8,
+          children: [
+            Text(
+              title,
+              textAlign: titleAlign,
+              style: style.bodyLarge?.copyWith(),
+            ),
+            ?tralling,
+          ],
         ),
       ),
     );

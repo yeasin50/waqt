@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:waqt/src/app_service.dart';
 
+import '../core/core.dart';
 import 'app_tile.dart';
 
 class AppOptionBottomSheet extends StatelessWidget {
-  const AppOptionBottomSheet._({required this.appInfo, required this.service});
+  const AppOptionBottomSheet._({required this.appInfo, required this.provider});
 
   final AppInfo appInfo;
-  final AppService service;
+  final AppNotifier provider;
 
   static void show({
     required BuildContext context,
     required AppInfo appInfo,
-    required AppService service,
+    required AppNotifier provider,
   }) {
     /// ...
     showModalBottomSheet(
@@ -20,7 +20,7 @@ class AppOptionBottomSheet extends StatelessWidget {
       isScrollControlled: true,
       showDragHandle: true,
       builder: (context) {
-        return AppOptionBottomSheet._(appInfo: appInfo, service: service);
+        return AppOptionBottomSheet._(appInfo: appInfo, provider: provider);
       },
     );
   }
@@ -28,6 +28,8 @@ class AppOptionBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = TextTheme.of(context);
+
+    final bool isAlreadyFavirate = provider.favoriteApps.contains(appInfo);
 
     return Padding(
       padding: const .all(24.0),
@@ -57,22 +59,26 @@ class AppOptionBottomSheet extends StatelessWidget {
                 AppTile(
                   title: "Uninstall",
                   titleAlign: .start,
-                  onTap: () => service.unistallApp(appInfo),
+                  onTap: () => provider.unistallApp(appInfo),
                 ),
                 AppTile(
-                  title: "Add to Favorite",
+                  title:
+                      "${isAlreadyFavirate ? "remove from" : "Add to"} Favorite",
                   titleAlign: .start,
-                  onTap: () {},
+                  onTap: () {
+                    provider.toggleFavorite(appInfo, !isAlreadyFavirate);
+                    Navigator.of(context).pop();
+                  },
                 ),
                 AppTile(
                   title: "Visibility config",
                   titleAlign: .start,
-                  onTap: () => service.openAppInfo(appInfo),
+                  onTap: () => provider.openAppInfo(appInfo),
                 ),
                 AppTile(
                   title: "App info",
                   titleAlign: .start,
-                  onTap: () => service.openAppInfo(appInfo),
+                  onTap: () => provider.openAppInfo(appInfo),
                 ),
               ],
             ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'app_service.dart';
+import 'core/core.dart';
 import 'widgets/app_option_bottom_sheet.dart';
 import 'widgets/app_search_field.dart';
 import 'widgets/app_tile.dart';
 import 'widgets/clock_view.dart';
+import 'widgets/favorite_app_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,12 +15,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final service = AppService();
+  final notifier = AppNotifier(AppDatabase());
 
   @override
   void initState() {
     super.initState();
-    service.getInstalledApps();
+    notifier.getApps().then((_) {
+      print(notifier.favoriteApps.toList());
+    });
   }
 
   @override
@@ -28,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       behavior: HitTestBehavior.translucent,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: AppProvider(
-        service: service,
+        notifier: notifier,
         child: PageView(
           onPageChanged: (page) {
             if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
@@ -46,57 +49,43 @@ class _HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const .all(24.0),
-        child: Column(
-          crossAxisAlignment: .stretch,
-          children: [
-            const Spacer(flex: 1),
-            ClockView(),
-            const Spacer(flex: 3),
+      body: ListenableBuilder(
+        //Find: why  I need to have  it here -_-, Because I already  have ListenableBuilder inside FavoriteAppList
+        listenable: AppProvider.of(context).notifier,
+        builder: (context, child) => Padding(
+          padding: const .all(24.0),
+          child: Column(
+            crossAxisAlignment: .stretch,
+            children: [
+              const Spacer(flex: 1),
+              ClockView(),
+              const Spacer(flex: 3),
 
-            Text(
-              'YOUR SPACE',
-              style: TextStyle(
-                fontSize: 11,
-                letterSpacing: 3,
-                color: Colors.white.withValues(alpha: 0.4),
-              ),
-            ),
+              FavoriteAppList(), //TODO: fixed size %height
+              const Spacer(flex: 2),
 
-            const SizedBox(height: 22),
-
-            Text(
-              'Nothing here. Yet.',
-              style: TextStyle(
-                fontSize: 17,
-                color: Colors.white.withValues(alpha: 0.75),
-              ),
-            ),
-
-            const Spacer(flex: 2),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'waqt',
-                  style: TextStyle(
-                    fontSize: 17,
-                    letterSpacing: 2,
-                    color: Colors.white.withValues(alpha: 0.8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'waqt',
+                    style: TextStyle(
+                      fontSize: 17,
+                      letterSpacing: 2,
+                      color: Colors.white.withValues(alpha: 0.8),
+                    ),
                   ),
-                ),
-                Text(
-                  'Everything, in its time.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withValues(alpha: 0.4),
+                  Text(
+                    'Everything, in its time.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withValues(alpha: 0.4),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -111,10 +100,13 @@ class _AppListView extends StatefulWidget {
 }
 
 class _AppListViewState extends State<_AppListView> {
-  late final provider = AppProvider.of(context).service;
+  late final provider = AppProvider.of(context).notifier;
   late List<AppInfo> filteredApps = provider.apps;
 
-  void onSearch(String v) {
+  final searchController = TextEditingController();
+
+  void onSearch() {
+    final v = searchController.text;
     if (v.trim().isEmpty) {
       filteredApps = provider.apps;
     } else {
@@ -127,12 +119,24 @@ class _AppListViewState extends State<_AppListView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    searchController.addListener(onSearch);
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final style = TextTheme.of(context);
 
     return Scaffold(
       floatingActionButtonLocation: .centerDocked, //TODO: might create custom location or might convert into stack
-      floatingActionButton: AppSearchField(onChanged: onSearch),
+      floatingActionButton: AppSearchField(controller: searchController),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -163,11 +167,15 @@ class _AppListViewState extends State<_AppListView> {
                 ...filteredApps.map(
                   (app) => AppTile(
                     title: app.name,
-                    onTap: () => provider.launchApp(app),
+                    onTap: () {
+                      provider.launchApp(app);
+                      searchController.clear();
+                      // unFocuse again?
+                    },
                     onLongPress: () => AppOptionBottomSheet.show(
                       context: context,
                       appInfo: app,
-                      service: provider,
+                      provider: provider,
                     ),
                   ),
                 ),

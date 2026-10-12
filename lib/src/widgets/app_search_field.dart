@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 
 class AppSearchField extends StatefulWidget {
-  const new({super.key, required this.onChanged});
+  const AppSearchField({super.key, required this.controller});
 
-  final ValueChanged<String> onChanged;
+  final TextEditingController controller;
 
   @override
   State<AppSearchField> createState() => _AppSearchFieldState();
 }
 
 class _AppSearchFieldState extends State<AppSearchField> {
+  final FocusNode focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
@@ -20,57 +28,69 @@ class _AppSearchFieldState extends State<AppSearchField> {
     final isKeyboardOpened = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     print("rebuild"); //TODO: check  why  3x rebuilds
-    return Container(
-      width: width,
-      alignment: .center,
-      height: 96 + 24,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: .topCenter,
-          end: .bottomCenter,
-          colors: [Colors.transparent, theme.scaffoldBackgroundColor],
-        ),
-      ),
+    return GestureDetector(
+      onTap: () {
+        final primaryFocus = FocusManager.instance.primaryFocus;
+        if (primaryFocus == null) return;
 
-      child: Padding(
-        padding: const .all(24.0),
-        child: AnimatedContainer(
-          duration: Durations.short3,
-          width: (isKeyboardOpened ? .85 : .45) * width,
-          height: 48,
-          decoration: ShapeDecoration(
-            shape: StadiumBorder(),
-            color: theme.colorScheme.primaryContainer,
+        focusNode.hasFocus
+            ? primaryFocus.unfocus()
+            : primaryFocus.requestFocus(focusNode);
+      },
+      child: Container(
+        width: width,
+        alignment: .center,
+        height: 96 + 24,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: .topCenter,
+            end: .bottomCenter,
+            colors: [Colors.transparent, theme.scaffoldBackgroundColor],
           ),
-          padding: .symmetric(horizontal: 12),
-          child: Stack(
-            children: [
-              Positioned(
-                left: 8,
-                top: 12,
-                child: const Icon(Icons.search, color: Colors.black87),
-              ),
-              Positioned(
-                left: 24,
-                right: 24,
-                bottom: 0,
-                top: 10,
-                child: TextFormField(
-                  cursorColor: Colors.grey,
-                  cursorHeight: 22,
-                  onChanged: widget.onChanged,
-                  textAlign: .center,
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    hintStyle: style.bodyLarge?.copyWith(color: Colors.black87),
-                    border: InputBorder.none,
-                    isCollapsed: true,
-                  ),
-                  style: style.bodyLarge?.copyWith(color: Colors.black),
-                  textAlignVertical: .center,
+        ),
+        child: Padding(
+          padding: const .all(24.0),
+          child: AnimatedContainer(
+            duration: Durations.short3,
+            width: (isKeyboardOpened ? .85 : .45) * width,
+            height: 48,
+            decoration: ShapeDecoration(
+              shape: StadiumBorder(),
+              color: theme.colorScheme.primaryContainer,
+            ),
+            padding: .symmetric(horizontal: 12),
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 8,
+                  top: 12,
+                  child: const Icon(Icons.search, color: Colors.black87),
                 ),
-              ),
-            ],
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 0,
+                  top: 10,
+                  child: TextFormField(
+                    controller: widget.controller,
+                    focusNode: focusNode,
+                    cursorColor: Colors.grey,
+                    cursorHeight: 22,
+                    textAlign: .center,
+                    decoration: InputDecoration(
+                      hintText: 'Search',
+                      hintStyle: style.bodyLarge?.copyWith(
+                        color: Colors.black87,
+                      ),
+                      border: InputBorder.none,
+                      isCollapsed: true,
+                    ),
+                    style: style.bodyLarge?.copyWith(color: Colors.black),
+                    textAlignVertical: .center,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
