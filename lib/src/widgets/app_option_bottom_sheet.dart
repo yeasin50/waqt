@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../app_visiblity_config_page.dart';
 import '../core/core.dart';
 import 'app_tile.dart';
 
@@ -73,7 +74,10 @@ class AppOptionBottomSheet extends StatelessWidget {
                 AppTile(
                   title: "Visibility config",
                   titleAlign: .start,
-                  onTap: () => provider.openAppInfo(appInfo),
+                  onTap: () {
+                    final route = AppVisiblityConfigPage.route(appInfo);
+                    Navigator.of(context).push(route);
+                  },
                 ),
                 AppTile(
                   title: "App info",

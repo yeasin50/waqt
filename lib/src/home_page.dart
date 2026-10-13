@@ -6,6 +6,7 @@ import 'widgets/app_search_field.dart';
 import 'widgets/app_tile.dart';
 import 'widgets/clock_view.dart';
 import 'widgets/favorite_app_list.dart';
+import 'widgets/footer_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: AppProvider(
         notifier: notifier,
         child: PageView(
+          physics: const BouncingScrollPhysics(),
           onPageChanged: (page) {
             if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
           },
@@ -63,27 +65,7 @@ class _HomeView extends StatelessWidget {
 
               FavoriteAppList(), //TODO: fixed size %height
               const Spacer(flex: 2),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'waqt',
-                    style: TextStyle(
-                      fontSize: 17,
-                      letterSpacing: 2,
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
-                  ),
-                  Text(
-                    'Everything, in its time.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withValues(alpha: 0.4),
-                    ),
-                  ),
-                ],
-              ),
+              FooterView(),
             ],
           ),
         ),
