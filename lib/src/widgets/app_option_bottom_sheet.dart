@@ -75,7 +75,10 @@ class AppOptionBottomSheet extends StatelessWidget {
                   title: "Visibility config",
                   titleAlign: .start,
                   onTap: () {
-                    final route = AppVisiblityConfigPage.route(appInfo);
+                    final route = AppVisiblityConfigPage.route(
+                      appInfo,
+                      provider,
+                    );
                     Navigator.of(context).push(route);
                   },
                 ),

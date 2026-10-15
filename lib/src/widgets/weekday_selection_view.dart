@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
 import 'app_chip.dart';
+import 'section_title_builder.dart';
 
 class WeekDaySelectionView extends StatelessWidget {
   const WeekDaySelectionView({
@@ -19,7 +20,7 @@ class WeekDaySelectionView extends StatelessWidget {
       crossAxisAlignment: .stretch,
       spacing: 12,
       children: [
-        Text("week days"),
+        SectionTitleBuilder(title: "week days", onClear: () => onChanged({})),
         Wrap(
           spacing: 8,
           runSpacing: 8,

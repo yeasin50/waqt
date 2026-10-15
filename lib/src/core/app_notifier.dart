@@ -32,6 +32,15 @@ class AppNotifier extends AppService with ChangeNotifier {
         for (final app in _db.getAppConfigs()) app.packageName: app,
       };
 
+      final visibilityCongfigs = _db.getVisiblityCongis();
+      for (final v in visibilityCongfigs) {
+        if (!merged.keys.contains(v.packageName)) continue;
+
+        merged[v.packageName] = merged[v.packageName]!.copyWith(
+          visiblityInfo: v,
+        );
+      }
+
       _apps
         ..clear()
         ..addAll(merged.values);
@@ -105,6 +114,11 @@ class AppNotifier extends AppService with ChangeNotifier {
     _db.updateConif(updateItem);
     _apps.remove(app);
     _apps.add(updateItem);
+    notifyListeners();
+  }
+
+  void updateVibilityConfig(AppVisiblityInfo info) {
+    _db.updateVisiblity(info);
     notifyListeners();
   }
 }

@@ -1,61 +1,23 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 
-import 'core/core.dart' show AppInfo;
+import 'core/core.dart';
 import 'widgets/daily_hour_selection_view.dart';
 import 'widgets/monthday_selection_view.dart';
 import 'widgets/weekday_selection_view.dart';
 
 //TODO:  color map  per day*time for progress graph
-enum AppVisiblityMode { daily(), weekly(), monthly() }
-
-class AppVisiblityCreator extends ChangeNotifier {
-  AppVisiblityMode _selectedMode = .weekly;
-  AppVisiblityMode get selectedMode => _selectedMode;
-
-  void changeMode(AppVisiblityMode mode) {
-    _selectedMode = mode;
-    notifyListeners();
-  }
-
-  Set<int> _selectedWeekDays = {};
-  UnmodifiableSetView<int> get selectedWeekDays =>
-      UnmodifiableSetView(_selectedWeekDays);
-
-  void updateWeekDays(Set<int> data) {
-    _selectedWeekDays = data;
-    notifyListeners();
-  }
-
-  Set<int> _selectedMonthDays = {};
-  UnmodifiableSetView<int> get selectedMonthDays =>
-      UnmodifiableSetView(_selectedMonthDays);
-
-  void updateMonthDays(Set<int> data) {
-    _selectedMonthDays = data;
-    notifyListeners();
-  }
-
-  List<(TimeOfDay start, TimeOfDay end)> _dailyTime = [];
-  UnmodifiableListView<(TimeOfDay start, TimeOfDay end)> get dailyTime =>
-      UnmodifiableListView(_dailyTime);
-
-  void updateTimeOfDay(int index, TimeOfDay start, TimeOfDay end) {
-    _dailyTime[index] = (start, end);
-    print(_dailyTime[index]);
-    notifyListeners();
-  }
-}
 
 class AppVisiblityConfigPage extends StatefulWidget {
   const new({super.key, required this.appInfo});
 
   final AppInfo appInfo;
 
-  static MaterialPageRoute route(AppInfo app) {
+  static MaterialPageRoute route(AppInfo app, AppNotifier notifier) {
     return MaterialPageRoute(
-      builder: (context) => AppVisiblityConfigPage(appInfo: app),
+      builder: (context) => AppProvider(
+        notifier: notifier,
+        child: AppVisiblityConfigPage(appInfo: app),
+      ),
     );
   }
 
@@ -65,6 +27,11 @@ class AppVisiblityConfigPage extends StatefulWidget {
 
 class _AppVisiblityConfigPageState extends State<AppVisiblityConfigPage> {
   final AppVisiblityCreator creator = AppVisiblityCreator();
+
+  void save() {
+    AppProvider.of(context).notifier
+        .updateVibilityConfig(creator.toSaveModel(widget.appInfo.packageName));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +49,9 @@ class _AppVisiblityConfigPageState extends State<AppVisiblityConfigPage> {
         ),
       ),
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          actions: [IconButton(onPressed: save, icon: Icon(Icons.save))],
+        ),
         body: ListenableBuilder(
           listenable: creator,
 
@@ -128,6 +97,8 @@ class _AppVisiblityConfigPageState extends State<AppVisiblityConfigPage> {
                   ),
 
                 DailyHourSelectionView(creator: creator),
+
+                SizedBox(height: 24),
               ],
             ),
           ),

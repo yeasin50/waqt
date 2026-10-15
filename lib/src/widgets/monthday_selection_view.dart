@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_chip.dart';
+import 'section_title_builder.dart';
 
 /// Make hover-drag selection? Hell NO....
 /// Make it difficult to select days to that user think before selecting a day.
@@ -20,8 +21,7 @@ class MonthDaySelectionView extends StatelessWidget {
       crossAxisAlignment: .stretch,
       spacing: 12,
       children: [
-        Text("month days"),
-
+        SectionTitleBuilder(title: "month days", onClear: () => onChanged({})),
         GridView.count(
           crossAxisCount: 7,
           physics: NeverScrollableScrollPhysics(),
