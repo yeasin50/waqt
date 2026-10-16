@@ -26,7 +26,15 @@ class AppVisiblityConfigPage extends StatefulWidget {
 }
 
 class _AppVisiblityConfigPageState extends State<AppVisiblityConfigPage> {
-  final AppVisiblityCreator creator = AppVisiblityCreator();
+  late final AppVisiblityCreator creator = AppVisiblityCreator(
+    widget.appInfo.visiblityInfo,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.appInfo.visiblityInfo.toString());
+  }
 
   void save() {
     AppProvider.of(context).notifier
@@ -96,7 +104,8 @@ class _AppVisiblityConfigPageState extends State<AppVisiblityConfigPage> {
                     onChanged: (v) => creator.updateMonthDays(v),
                   ),
 
-                DailyHourSelectionView(creator: creator),
+                if (creator.selectedMode != .always)
+                  DailyHourSelectionView(creator: creator),
 
                 SizedBox(height: 24),
               ],

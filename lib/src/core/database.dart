@@ -66,6 +66,8 @@ class AppVisiblityModeAdapter extends TypeAdapter<AppVisiblityMode> {
   }
 }
 
+class AppPreference {}
+
 class AppDatabase {
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -93,4 +95,6 @@ class AppDatabase {
 
   void updateVisiblity(AppVisiblityInfo value) =>
       _visibilityBox.put(value.packageName, value);
+
+  AppPreference get preference => AppPreference();
 }

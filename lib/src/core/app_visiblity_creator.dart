@@ -4,6 +4,11 @@ import 'package:collection/collection.dart';
 import 'app_visiblity.dart';
 
 class AppVisiblityCreator extends ChangeNotifier {
+  AppVisiblityCreator([AppVisiblityInfo? initData]) {
+    if (initData == null) return;
+    _initData(initData);
+  }
+
   AppVisiblityMode _selectedMode = .weekly;
   AppVisiblityMode get selectedMode => _selectedMode;
 
@@ -30,13 +35,11 @@ class AppVisiblityCreator extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// each  bloc gonna represent in [dailyTime] with  [_dayBlocIntervavl] minutes
-  int _dayBlocIntervavl = 60;
-
+  //TODO: in future might split into slot
   int get numberOfDaySlot => 24;
-  int get interval => _dayBlocIntervavl;
+  int get interval => 60; // in minutes
 
-  final List<TimeOfDay> _dailyTime = [];
+  List<TimeOfDay> _dailyTime = [];
   UnmodifiableListView<TimeOfDay> get dailyTime =>
       UnmodifiableListView(_dailyTime);
 
@@ -57,15 +60,25 @@ class AppVisiblityCreator extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _initData(AppVisiblityInfo initData) {
+    _selectedMode = initData.mode;
+    _selectedWeekDays = initData.weekDays.toSet();
+    _selectedMonthDays = initData.monthDays.toSet();
+    _dailyTime = initData.dailyblocks
+        .map((e) => TimeOfDay(hour: e ~/ 60, minute: e % 60))
+        .toList();
+  }
+
   AppVisiblityInfo toSaveModel(String pkgName) {
     return AppVisiblityInfo(
       packageName: pkgName,
       mode: selectedMode,
       weekDays: selectedMode == .weekly ? _selectedWeekDays.toList() : [],
       monthDays: selectedMode == .monthly ? _selectedMonthDays.toList() : [],
-      dailyBlocksDurationInMin: interval,
+      dailyBlocksDurationInMin: 60,
       dailyblocks: dailyTime
-          .map((e) => (e.hour * 60 + e.minute) ~/ interval)
+          .map((e) => (e.hour * 60) + e.minute)
+          .toSet()
           .toList(),
     );
   }

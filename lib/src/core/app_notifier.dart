@@ -1,6 +1,6 @@
-import 'dart:collection';
 import 'dart:developer';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import 'core.dart';
@@ -10,6 +10,8 @@ class AppNotifier extends AppService with ChangeNotifier {
 
   final AppDatabase _db;
   final Set<AppInfo> _apps = {};
+
+  AppPreference get preference => _db.preference;
 
   UnmodifiableListView<AppInfo> get apps {
     final sortItems = _apps.toList()..sort((a, b) => a.name.compareTo(b.name));
@@ -119,6 +121,16 @@ class AppNotifier extends AppService with ChangeNotifier {
 
   void updateVibilityConfig(AppVisiblityInfo info) {
     _db.updateVisiblity(info);
+    final app = _apps.firstWhereOrNull(
+      (e) => e.packageName == info.packageName,
+    );
+
+    if (app == null) return;
+
+    final temp = app.copyWith(visiblityInfo: info);
+    _apps.remove(app);
+    _apps.add(temp);
+
     notifyListeners();
   }
 }

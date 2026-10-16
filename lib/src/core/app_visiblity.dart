@@ -1,4 +1,4 @@
-enum AppVisiblityMode { daily(), weekly(), monthly() }
+enum AppVisiblityMode { always, daily(), weekly(), monthly() }
 
 class AppVisiblityInfo {
   const AppVisiblityInfo({
@@ -17,6 +17,20 @@ class AppVisiblityInfo {
   final List<int> weekDays;
   final List<int> monthDays;
 
+  @deprecated
   final int dailyBlocksDurationInMin;
+
   final List<int> dailyblocks;
+
+  @override
+  String toString() {
+    return 'AppVisiblityInfo('
+        'packageName: $packageName, '
+        'mode: $mode, '
+        'weekDays: $weekDays, '
+        'monthDays: $monthDays, '
+        'dailyBlocksDurationInMin: $dailyBlocksDurationInMin, '
+        'dailyblocks: $dailyblocks'
+        ')';
+  }
 }
