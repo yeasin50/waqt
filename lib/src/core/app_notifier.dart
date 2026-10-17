@@ -112,11 +112,20 @@ class AppNotifier extends AppService with ChangeNotifier {
   }
 
   void toggleFavorite(AppInfo app, [bool isFav = true]) {
-    final updateItem = app.copyWith(isFavtorite: isFav);
+    //TODO: sortify
+    final updateItem = app.copyWith(favoriteIndex: () => isFav ? 1 : null);
     _db.updateConif(updateItem);
     _apps.remove(app);
     _apps.add(updateItem);
     notifyListeners();
+  }
+
+  void reOrderFavotireApp(AppInfo app, int updatedIndex) {
+    // final temp = favoriteApps[current];
+    // can get currentIndex from  app,
+    /// can calculate middle from  (updatedIndex +-1)
+    /// so gap 1000?
+    //TODO: sort
   }
 
   void updateVibilityConfig(AppVisiblityInfo info) {

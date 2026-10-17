@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/core.dart';
+import 'settings_page.dart';
 import 'widgets/app_option_bottom_sheet.dart';
 import 'widgets/app_search_field.dart';
 import 'widgets/app_tile.dart';
@@ -16,30 +17,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final notifier = AppNotifier(AppDatabase());
-
-  @override
-  void initState() {
-    super.initState();
-    notifier.getApps().then((_) {
-      print(notifier.favoriteApps.toList());
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: AppProvider(
-        notifier: notifier,
-        child: PageView(
-          physics: const BouncingScrollPhysics(),
-          onPageChanged: (page) {
-            if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
-          },
-          children: [_HomeView(), _AppListView()],
-        ),
+      child: PageView(
+        physics: const BouncingScrollPhysics(),
+        onPageChanged: (page) {
+          if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
+        },
+        children: [_HomeView(), _AppListView()],
       ),
     );
   }
@@ -138,7 +126,9 @@ class _AppListViewState extends State<_AppListView> {
                           textAlign: .center,
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(SettingsPage.route());
+                          },
                           icon: Icon(Icons.settings_outlined),
                           color: Colors.grey,
                         ),

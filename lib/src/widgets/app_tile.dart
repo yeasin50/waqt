@@ -19,23 +19,28 @@ class AppTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final style = TextTheme.of(context);
 
+    final titleWidget = Align(
+      alignment: titleAlign == .start || titleAlign == .left
+          ? .centerLeft
+          : .center,
+      child: Text(
+        title,
+        textAlign: titleAlign,
+        style: style.bodyLarge?.copyWith(),
+      ),
+    );
     return InkWell(
       onTap: onTap,
       onLongPress: onLongPress,
       child: Padding(
         padding: const .symmetric(vertical: 12),
-        child: Row(
-          mainAxisAlignment: .center,
-          spacing: 8,
-          children: [
-            Text(
-              title,
-              textAlign: titleAlign,
-              style: style.bodyLarge?.copyWith(),
-            ),
-            ?tralling,
-          ],
-        ),
+        child: tralling == null
+            ? titleWidget
+            : Row(
+                mainAxisAlignment: .spaceBetween,
+                spacing: 24,
+                children: [titleWidget, tralling!],
+              ),
       ),
     );
   }
