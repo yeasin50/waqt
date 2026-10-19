@@ -115,7 +115,7 @@ class AppNotifier extends AppService with ChangeNotifier {
     }
   }
 
-  static const int _deltaGap = 3;
+  static const int _deltaGap = 1000;
   int get _newItemPositionIndex {
     return favoriteApps.isEmpty
         ? _deltaGap

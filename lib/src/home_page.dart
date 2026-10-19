@@ -48,12 +48,22 @@ class _HomeView extends StatelessWidget {
             crossAxisAlignment: .stretch,
             children: [
               const Spacer(flex: 1),
-              ClockView(),
-              const Spacer(flex: 3),
+              Expanded(
+                flex: 2,
+                child: Align(alignment: .centerLeft, child: ClockView()),
+              ),
+              // const Spacer(flex: 3),
 
-              FavoriteAppList(), //TODO: fixed size %height
-              const Spacer(flex: 2),
-              FooterView(),
+              Expanded(
+                flex: 3,
+                child: Align(
+                  alignment: .center,
+                  child: FavoriteAppList(),
+                ), // I may  limit only to 5
+              ), //TODO: fixed size %height
+              Expanded(
+                child: Align(alignment: .bottomCenter, child: FooterView()),
+              ),
             ],
           ),
         ),
@@ -105,7 +115,7 @@ class _AppListViewState extends State<_AppListView> {
     final style = TextTheme.of(context);
 
     return Scaffold(
-      floatingActionButtonLocation: .centerDocked, //TODO: might create custom location or might convert into stack
+      floatingActionButtonLocation: .centerDocked,
       floatingActionButton: AppSearchField(controller: searchController),
       body: SafeArea(
         child: CustomScrollView(
