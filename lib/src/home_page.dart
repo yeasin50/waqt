@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/core.dart';
+import 'settings_page.dart';
 import 'widgets/app_option_bottom_sheet.dart';
 import 'widgets/app_search_field.dart';
 import 'widgets/app_tile.dart';
@@ -16,30 +17,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final notifier = AppNotifier(AppDatabase());
-
-  @override
-  void initState() {
-    super.initState();
-    notifier.getApps().then((_) {
-      print(notifier.favoriteApps.toList());
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: AppProvider(
-        notifier: notifier,
-        child: PageView(
-          physics: const BouncingScrollPhysics(),
-          onPageChanged: (page) {
-            if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
-          },
-          children: [_HomeView(), _AppListView()],
-        ),
+      child: PageView(
+        physics: const BouncingScrollPhysics(),
+        onPageChanged: (page) {
+          if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
+        },
+        children: [_HomeView(), _AppListView()],
       ),
     );
   }
@@ -60,12 +48,22 @@ class _HomeView extends StatelessWidget {
             crossAxisAlignment: .stretch,
             children: [
               const Spacer(flex: 1),
-              ClockView(),
-              const Spacer(flex: 3),
+              Expanded(
+                flex: 2,
+                child: Align(alignment: .centerLeft, child: ClockView()),
+              ),
+              // const Spacer(flex: 3),
 
-              FavoriteAppList(), //TODO: fixed size %height
-              const Spacer(flex: 2),
-              FooterView(),
+              Expanded(
+                flex: 3,
+                child: Align(
+                  alignment: .center,
+                  child: FavoriteAppList(),
+                ), // I may  limit only to 5
+              ), //TODO: fixed size %height
+              Expanded(
+                child: Align(alignment: .bottomCenter, child: FooterView()),
+              ),
             ],
           ),
         ),
@@ -117,7 +115,7 @@ class _AppListViewState extends State<_AppListView> {
     final style = TextTheme.of(context);
 
     return Scaffold(
-      floatingActionButtonLocation: .centerDocked, //TODO: might create custom location or might convert into stack
+      floatingActionButtonLocation: .centerDocked,
       floatingActionButton: AppSearchField(controller: searchController),
       body: SafeArea(
         child: CustomScrollView(
@@ -138,7 +136,9 @@ class _AppListViewState extends State<_AppListView> {
                           textAlign: .center,
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(SettingsPage.route());
+                          },
                           icon: Icon(Icons.settings_outlined),
                           color: Colors.grey,
                         ),

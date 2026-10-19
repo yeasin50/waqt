@@ -9,7 +9,7 @@ class AppInfoAdapter extends TypeAdapter<AppInfo> {
     return AppInfo(
       reader.read(),
       reader.read(),
-      isFavtorite: reader.read(), //
+      favoriteIndex: reader.read(), //
     );
   }
 
@@ -20,7 +20,7 @@ class AppInfoAdapter extends TypeAdapter<AppInfo> {
   void write(BinaryWriter writer, AppInfo obj) {
     writer.write(obj.name);
     writer.write(obj.packageName);
-    writer.write(obj.isFavtorite);
+    writer.write(obj.favoriteIndex);
   }
 }
 

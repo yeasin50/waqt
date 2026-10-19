@@ -4,11 +4,9 @@ final class AppTheme {
   ThemeData baseTheme(BuildContext context) => ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: const Color(0xFF101010),
-    colorScheme: const ColorScheme.dark(
-      surface: Color(0xFF101010),
-      primary: Colors.white,
-    ),
+    colorScheme: const .dark(surface: Color(0xFF101010), primary: Colors.white),
     dividerColor: Colors.grey,
+    appBarTheme: AppBarThemeData(elevation: 0, scrolledUnderElevation: 0),
     textTheme: TextTheme(
       headlineLarge: TextStyle(
         fontSize: 68,

@@ -1,24 +1,34 @@
+import 'package:flutter/foundation.dart';
+
 import 'app_visiblity.dart';
 
 class AppInfo {
   const AppInfo(
     this.name,
     this.packageName, {
-    this.isFavtorite = false,
+    this.favoriteIndex,
     this.visiblityInfo,
   });
 
   final String name;
   final String packageName;
-  final bool isFavtorite;
+
+  /// if null then  it is not added to favtorite/homePage
+  final int? favoriteIndex;
+  bool get isFavtorite => favoriteIndex != null;
 
   final AppVisiblityInfo? visiblityInfo;
 
-  AppInfo copyWith({bool? isFavtorite, AppVisiblityInfo? visiblityInfo}) {
+  AppInfo copyWith({
+    ValueGetter<int?>? favoriteIndex,
+    AppVisiblityInfo? visiblityInfo,
+  }) {
     return AppInfo(
       name,
       packageName,
-      isFavtorite: isFavtorite ?? this.isFavtorite,
+      favoriteIndex: favoriteIndex != null
+          ? favoriteIndex()
+          : this.favoriteIndex,
       visiblityInfo: visiblityInfo ?? this.visiblityInfo,
     );
   }
@@ -29,14 +39,14 @@ class AppInfo {
       other is AppInfo &&
           name == other.name &&
           packageName == other.packageName &&
-          isFavtorite == other.isFavtorite &&
+          favoriteIndex == other.favoriteIndex &&
           visiblityInfo == other.visiblityInfo;
 
   @override
   int get hashCode =>
-      Object.hash(name, packageName, isFavtorite, visiblityInfo);
+      Object.hash(name, packageName, favoriteIndex, visiblityInfo);
 
   @override
   String toString() =>
-      "name $name pkg: $packageName isFavtorite:$isFavtorite visiblityInfo ${visiblityInfo.toString()}";
+      "name $name pkg: $packageName favoriteIndex:$favoriteIndex visiblityInfo ${visiblityInfo.toString()}";
 }

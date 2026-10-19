@@ -26,9 +26,14 @@ class FavoriteAppList extends StatelessWidget {
               for (final app in provider.favoriteApps)
                 AppTile(
                   title: app.name,
-                  tralling: app.isFavtorite
-                      ? Icon(Icons.favorite_outlined)
-                      : null,
+                  // tralling: app.isFavtorite
+                  //     ? IconButton(
+                  //         icon: Icon(Icons.favorite_outlined),
+                  //         onPressed: () {
+                  //           provider.toggleFavorite(app, false);
+                  //         },
+                  //       )
+                  //     : null,
                   onTap: () => provider.launchApp(app),
                   onLongPress: () => AppOptionBottomSheet.show(
                     context: context,
