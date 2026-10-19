@@ -18,7 +18,6 @@ class _WaqtAppState extends State<WaqtApp> {
   void initState() {
     super.initState();
     notifier.getApps().then((_) {
-      print(notifier.favoriteApps.toList());
     });
   }
 
