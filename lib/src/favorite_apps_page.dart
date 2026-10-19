@@ -20,8 +20,6 @@ class FavoriteAppsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     late final provider = AppProvider.of(context).notifier;
 
-    final style = TextTheme.of(context);
-
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -92,10 +90,11 @@ class _FavoriteApps extends StatelessWidget {
     return ListenableBuilder(
       listenable: provider,
       builder: (context, child) {
-        late List<AppInfo> favoriteApps = provider.favoriteApps;
+        late List<AppInfo> favoriteApps = provider.favoriteApps.toList();
         return SliverReorderableList(
           proxyDecorator: proxyDecorator,
           itemCount: favoriteApps.length,
+          onReorderItem: provider.reOrderFavotireApp,
           itemBuilder: (context, index) {
             final app = favoriteApps[index];
             return AppTile(
@@ -109,9 +108,6 @@ class _FavoriteApps extends StatelessWidget {
                 child: Icon(Icons.drag_handle_outlined),
               ),
             );
-          },
-          onReorderItem: (int oldIndex, int newIndex) {
-            provider.reOrderFavotireApp(favoriteApps[oldIndex], newIndex);
           },
         );
       },

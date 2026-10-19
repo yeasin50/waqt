@@ -18,8 +18,12 @@ class AppNotifier extends AppService with ChangeNotifier {
     return UnmodifiableListView(sortItems);
   }
 
-  UnmodifiableListView<AppInfo> get favoriteApps =>
-      UnmodifiableListView(_apps.where((e) => e.isFavtorite));
+  UnmodifiableListView<AppInfo> get favoriteApps {
+    final sortedItems = _apps.where((e) => e.isFavtorite).toList()
+      ..sort((a, b) => a.favoriteIndex!.compareTo(b.favoriteIndex!));
+
+    return UnmodifiableListView(sortedItems);
+  }
 
   String _err = "";
   String get err => _err;
@@ -111,21 +115,66 @@ class AppNotifier extends AppService with ChangeNotifier {
     }
   }
 
+  static const int _deltaGap = 3;
+  int get _newItemPositionIndex {
+    return favoriteApps.isEmpty
+        ? _deltaGap
+        : favoriteApps.last.favoriteIndex! + _deltaGap;
+  }
+
   void toggleFavorite(AppInfo app, [bool isFav = true]) {
-    //TODO: sortify
-    final updateItem = app.copyWith(favoriteIndex: () => isFav ? 1 : null);
+    final updateItem = app.copyWith(
+      favoriteIndex: () => isFav ? _newItemPositionIndex : null,
+    );
     _db.updateConif(updateItem);
     _apps.remove(app);
     _apps.add(updateItem);
     notifyListeners();
   }
 
-  void reOrderFavotireApp(AppInfo app, int updatedIndex) {
-    // final temp = favoriteApps[current];
-    // can get currentIndex from  app,
-    /// can calculate middle from  (updatedIndex +-1)
-    /// so gap 1000?
-    //TODO: sort
+  void _refreshAppPosition() {
+    final favApps = favoriteApps.toList();
+    _apps.removeWhere((e) => e.isFavtorite);
+
+    for (int i = 0; i < favApps.length; i++) {
+      final newPosition = () => i * _deltaGap + _deltaGap;
+      favApps[i] = favApps[i].copyWith(favoriteIndex: newPosition);
+    }
+    _apps.addAll(favApps);
+  }
+
+  /// 🤔: SO I have been thinking is,  I can just a list of packageId which  can handle insert the way  we like.
+  /// so  that I don;t have to put index field into each appInfo, but  rather just compare pkgId and returns favoriteApps
+  /// How much  it make difference?
+  /// I don't have to worry about position which need to reOrder on after certain position to prevent none-different position.
+  /// What I loss, well nothing .... Compare & sort
+  void reOrderFavotireApp(int oldIndex, int newIndex) {
+    final items = favoriteApps.toList();
+    final movedApp = items[oldIndex];
+    items.removeAt(oldIndex);
+
+    final int newPosition;
+    if (newIndex == 0) {
+      newPosition = items.first.favoriteIndex! ~/ 2;
+    } else if (newIndex == items.length) {
+      newPosition = items.last.favoriteIndex! + _deltaGap;
+    } else {
+      final prev = items[newIndex - 1].favoriteIndex!;
+      final next = items[newIndex].favoriteIndex!;
+      if (next - prev == 1) {
+        _refreshAppPosition();
+        return reOrderFavotireApp(oldIndex, newIndex);
+      } else {
+        newPosition = prev + (next - prev) ~/ 2;
+      }
+    }
+
+    _apps.removeWhere((e) => e.packageName == movedApp.packageName);
+
+    final updatedApp = movedApp.copyWith(favoriteIndex: () => newPosition);
+    _db.updateConif(updatedApp);
+    _apps.add(updatedApp);
+    notifyListeners();
   }
 
   void updateVibilityConfig(AppVisiblityInfo info) {
