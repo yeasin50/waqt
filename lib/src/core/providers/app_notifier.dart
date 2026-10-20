@@ -3,15 +3,22 @@ import 'dart:developer';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import 'core.dart';
+import '../core.dart';
+import '../models/user_preference.dart';
 
-class AppNotifier extends AppService with ChangeNotifier {
-  AppNotifier(this._db);
+class AppNotifier extends ChangeNotifier {
+  AppNotifier(this._db, this.service) {
+    checkLockPermission();
+  }
 
   final AppDatabase _db;
+  final AppService service;
+  AppDatabase get db => _db;
+
   final Set<AppInfo> _apps = {};
 
-  AppPreference get preference => _db.preference;
+  late UserPreference _preference = _db.preference();
+  UserPreference get preference => _preference;
 
   UnmodifiableListView<AppInfo> get apps {
     final sortItems = _apps.toList()..sort((a, b) => a.name.compareTo(b.name));
@@ -27,11 +34,15 @@ class AppNotifier extends AppService with ChangeNotifier {
 
   String _err = "";
   String get err => _err;
+  void setErr(String msg) {
+    _err = msg;
+    notifyListeners();
+  }
 
   Future<void> getApps() async {
     try {
       _err = "";
-      final result = await super.getInstalledApps();
+      final result = await service.getInstalledApps();
 
       final merged = <String, AppInfo>{
         for (final app in result) app.packageName: app,
@@ -60,12 +71,9 @@ class AppNotifier extends AppService with ChangeNotifier {
     }
   }
 
-  /// Not certain whether I should just use the super class instead and handle exception  into ui,
-  /// But that will look bad
-  @override
   Future<void> launchApp(AppInfo app) async {
     try {
-      await super.launchApp(app);
+      await service.launchApp(app);
     } catch (e) {
       log("failed to launch app ${e.toString()}");
       _err = "failed to launch ${app.name}";
@@ -73,10 +81,9 @@ class AppNotifier extends AppService with ChangeNotifier {
     }
   }
 
-  @override
   Future<void> openAppInfo(AppInfo app) async {
     try {
-      await super.openAppInfo(app);
+      await service.openAppInfo(app);
     } catch (e) {
       _err = "failed to open app info ${app.name}";
       notifyListeners();
@@ -84,33 +91,12 @@ class AppNotifier extends AppService with ChangeNotifier {
   }
 
   // FIXME: removed isn't working
-  @override
   Future<void> unistallApp(AppInfo app) async {
     try {
-      await super.unistallApp(app);
+      await service.unistallApp(app);
       print("app ${app.name} removed");
     } catch (e) {
       _err = "failed to unistall app ${app.name}";
-      notifyListeners();
-    }
-  }
-
-  @override
-  Future<void> lockScreen() async {
-    try {
-      await super.lockScreen();
-    } catch (e) {
-      _err = "please grant the permission";
-      notifyListeners();
-    }
-  }
-
-  @override
-  Future<void> requestLockPermission() async {
-    try {
-      await super.requestLockPermission();
-    } catch (e) {
-      _err = "failed to request lock permission";
       notifyListeners();
     }
   }
@@ -189,6 +175,40 @@ class AppNotifier extends AppService with ChangeNotifier {
     _apps.remove(app);
     _apps.add(temp);
 
+    notifyListeners();
+  }
+
+  /// will shit elsewhere
+
+  bool _hasLockPermission = false;
+  bool get hasLockPermission => _hasLockPermission;
+
+  Future<void> checkLockPermission() async {
+    _hasLockPermission = await service.hasLockPermission();
+
+    notifyListeners();
+  }
+
+  Future<void> lockScreen() async {
+    try {
+      await service.lockScreen();
+    } catch (e) {
+      setErr("please grant the permission");
+    }
+  }
+
+  Future<void> requestLockPermission() async {
+    try {
+      await service.requestLockPermission();
+    } catch (e) {
+      setErr("failed to request lock permission");
+    }
+  }
+
+  void toggleDoubleTapLoc(bool enable) {
+    final updateValue = preference.copyWith(enableDoubleTapLock: enable);
+    db.updatePreference(updateValue);
+    _preference = updateValue;
     notifyListeners();
   }
 }

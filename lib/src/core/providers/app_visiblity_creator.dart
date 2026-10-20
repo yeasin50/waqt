@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
-import 'app_visiblity.dart';
+import '../models/app_visiblity.dart';
 
 class AppVisiblityCreator extends ChangeNotifier {
   AppVisiblityCreator([AppVisiblityInfo? initData]) {

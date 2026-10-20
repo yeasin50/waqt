@@ -40,33 +40,41 @@ class _HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListenableBuilder(
-        //Find: why  I need to have  it here -_-, Because I already  have ListenableBuilder inside FavoriteAppList
         listenable: AppProvider.of(context).notifier,
-        builder: (context, child) => Padding(
-          padding: const .all(24.0),
-          child: Column(
-            crossAxisAlignment: .stretch,
-            children: [
-              const Spacer(flex: 1),
-              Expanded(
-                flex: 2,
-                child: Align(alignment: .centerLeft, child: ClockView()),
-              ),
-              // const Spacer(flex: 3),
+        builder: (context, child) {
+          final provider = AppProvider.of(context).notifier;
+          return GestureDetector(
+            behavior: .opaque,
+            onDoubleTap: provider.preference.enableDoubleTapLock
+                ? () => provider.lockScreen()
+                : null,
+            child: Padding(
+              padding: const .all(24.0),
+              child: Column(
+                crossAxisAlignment: .stretch,
+                children: [
+                  const Spacer(flex: 1),
+                  Expanded(
+                    flex: 2,
+                    child: Align(alignment: .centerLeft, child: ClockView()),
+                  ),
+                  // const Spacer(flex: 3),
 
-              Expanded(
-                flex: 3,
-                child: Align(
-                  alignment: .center,
-                  child: FavoriteAppList(),
-                ), // I may  limit only to 5
-              ), //TODO: fixed size %height
-              Expanded(
-                child: Align(alignment: .bottomCenter, child: FooterView()),
+                  Expanded(
+                    flex: 3,
+                    child: Align(
+                      alignment: .center,
+                      child: FavoriteAppList(),
+                    ), // I may  limit only to 5
+                  ), //TODO: fixed size %height
+                  Expanded(
+                    child: Align(alignment: .bottomCenter, child: FooterView()),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

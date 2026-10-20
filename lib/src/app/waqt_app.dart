@@ -12,13 +12,12 @@ class WaqtApp extends StatefulWidget {
 }
 
 class _WaqtAppState extends State<WaqtApp> {
-  final notifier = AppNotifier(AppDatabase());
+  final notifier = AppNotifier(AppDatabase(), AppService());
 
   @override
   void initState() {
     super.initState();
-    notifier.getApps().then((_) {
-    });
+    notifier.getApps();
   }
 
   @override

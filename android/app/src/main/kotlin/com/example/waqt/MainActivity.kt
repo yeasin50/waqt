@@ -114,6 +114,18 @@ class MainActivity : FlutterActivity() {
                     result.success(true)
                 }
 
+                "checkLockPermission" -> {
+                    val dpm = context.getSystemService(
+                        Context.DEVICE_POLICY_SERVICE
+                    ) as DevicePolicyManager
+
+                    val admin = ComponentName(
+                        context,
+                        MyDeviceAdminReceiver::class.java
+                    )
+                    result.success(dpm.isAdminActive(admin))
+                }
+
                 "lockScreen" -> {
                     val devicePolicyManager =
                         getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager

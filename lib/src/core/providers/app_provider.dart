@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'core.dart' show AppNotifier;
+import '../core.dart' show AppNotifier;
 
 class AppProvider extends InheritedWidget {
   const AppProvider({super.key, required super.child, required this.notifier});
