@@ -23,6 +23,8 @@ class MainActivity : FlutterActivity() {
         flutterEngine: FlutterEngine
     ) {
         super.configureFlutterEngine(flutterEngine)
+        val apiImpl = ScreenLockApiImpl(this)
+        ScreenLockApi.setUp(flutterEngine.dartExecutor.binaryMessenger, apiImpl)
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,

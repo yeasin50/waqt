@@ -2,17 +2,20 @@ import 'dart:developer';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../core.dart';
 import '../models/user_preference.dart';
+import '../services/screen_lock_api.g.dart';
 
 class AppNotifier extends ChangeNotifier {
-  AppNotifier(this._db, this.service) {
+  AppNotifier(this._db, this.service, this.screenLockApi) {
     checkLockPermission();
   }
 
   final AppDatabase _db;
   final AppService service;
+  final ScreenLockApi screenLockApi;
   AppDatabase get db => _db;
 
   final Set<AppInfo> _apps = {};
@@ -189,9 +192,25 @@ class AppNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> _lockScreen() async {
+    try {
+      final isEnabled = await screenLockApi.checkLockPermission();
+      if (!isEnabled) {
+        // Accessibility service isn't turned on yet
+        // Guide user to Android Settings -> Accessibility
+        return;
+      }
+      await screenLockApi.lockScreen();
+    } on PlatformException catch (e) {
+      debugPrint("Lock failed: ${e.code} - ${e.message}");
+    }
+  }
+
   Future<void> lockScreen() async {
     try {
-      await service.lockScreen();
+      await _lockScreen();
+      // await service.lockScreen();
+      //
     } catch (e) {
       setErr("please grant the permission");
     }

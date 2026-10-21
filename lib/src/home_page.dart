@@ -39,6 +39,18 @@ class _HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final locker = AppProvider.of(context).notifier.screenLockApi;
+          final result = await locker.checkLockPermission();
+          print("has lock permission  $result");
+          if (result) {
+            await locker.lockScreen();
+          } else {
+            await locker.openAccessibilitySettings();
+          }
+        },
+      ),
       body: ListenableBuilder(
         listenable: AppProvider.of(context).notifier,
         builder: (context, child) {
