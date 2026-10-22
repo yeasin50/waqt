@@ -265,7 +265,7 @@ class AppManagerApi {
 abstract class AppChangeCallback {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  void onAppChanged(String packageName);
+  void onAppChanged(String packageName, String eventType);
 
   static void setUp(AppChangeCallback? api, {
     BinaryMessenger? binaryMessenger, 
@@ -283,8 +283,9 @@ abstract class AppChangeCallback {
         pigeonVar_channel.setMessageHandler((Object? message) async {
           final List<Object?> args = message! as List<Object?>;
           final String arg_packageName = args[0]! as String;
+          final String arg_eventType = args[1]! as String;
           try {
-            api.onAppChanged(arg_packageName);
+            api.onAppChanged(arg_packageName, arg_eventType);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

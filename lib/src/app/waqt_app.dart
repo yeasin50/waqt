@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/core.dart';
+import '../core/services/app_changes_listner.dart';
 import '../core/services/apps_api.g.dart';
 import '../core/services/screen_lock_api.g.dart';
 import '../home_page.dart';
@@ -25,6 +26,12 @@ class _WaqtAppState extends State<WaqtApp> {
   void initState() {
     super.initState();
     notifier.getApps();
+
+    AppChangeCallback.setUp(
+      AppChangeListener((pkg, event) async {
+        await notifier.getApps();
+      }),
+    );
   }
 
   @override

@@ -7,6 +7,12 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -14,6 +20,27 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     private val channel = "waqt/apps"
 
+    private var appChangeCallback: AppChangeCallback? = null
+
+    private val packageChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action
+
+            val eventType = when (action) {
+                Intent.ACTION_PACKAGE_ADDED -> "added"
+                Intent.ACTION_PACKAGE_REMOVED -> "removed"
+                Intent.ACTION_PACKAGE_REPLACED -> "replaced" 
+                Intent.ACTION_PACKAGE_CHANGED -> "changed" // app enabled/disabled
+                else -> return
+            }
+
+            val packageName = intent.data?.schemeSpecificPart ?: return
+
+            CoroutineScope(Dispatchers.Main).launch {
+                appChangeCallback?.onAppChanged(packageName, eventType)
+            }
+        }
+    }
 
     private val adminComponent by lazy {
         ComponentName(this, MyDeviceAdminReceiver::class.java)
@@ -152,4 +179,25 @@ class MainActivity : FlutterActivity() {
             }
         }
     }
+
+
+
+    override fun onStart() {
+        super.onStart()
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_CHANGED)
+            addAction(Intent.ACTION_PACKAGE_REPLACED)
+            addDataScheme("package")
+        }
+        registerReceiver(packageChangeReceiver, filter)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(packageChangeReceiver)
+    }
+
+
 }

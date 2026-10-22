@@ -29,5 +29,5 @@ abstract class AppManagerApi {
 // Kotlin calling Dart (The Listener)
 @FlutterApi()
 abstract class AppChangeCallback {
-  void onAppChanged(String packageName);
+  void onAppChanged(String packageName, String eventType);
 }

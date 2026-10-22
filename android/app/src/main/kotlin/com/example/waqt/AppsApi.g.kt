@@ -346,13 +346,13 @@ class AppChangeCallback(private val binaryMessenger: BinaryMessenger, private va
       AppsApiPigeonCodec()
     }
   }
-  suspend fun onAppChanged(packageNameArg: String)
+  suspend fun onAppChanged(packageNameArg: String, eventTypeArg: String)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     return suspendCancellableCoroutine { continuation ->
       val channelName = "dev.flutter.pigeon.waqt.AppChangeCallback.onAppChanged$separatedMessageChannelSuffix"
       val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-      channel.send(listOf(packageNameArg)) {
+      channel.send(listOf(packageNameArg, eventTypeArg)) {
         if (it is List<*>) {
           if (it.size > 1) {
             continuation.resumeWithException(FlutterError(it[0] as String, it[1] as String, it[2] as String?))
