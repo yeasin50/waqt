@@ -272,6 +272,8 @@ interface AppManagerApi {
   fun openAppInfo(packageName: String)
   fun openApp(packageName: String): Boolean
   fun uninstallApp(packageName: String)
+  fun isDefaultLauncher(): Boolean
+  fun requestDefaultLauncher()
 
   companion object {
     /** The codec used by AppManagerApi. */
@@ -325,6 +327,37 @@ interface AppManagerApi {
             val packageNameArg = args[0] as String
             val wrapped: List<Any?> = try {
               api.uninstallApp(packageNameArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              AppsApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.waqt.AppManagerApi.isDefaultLauncher$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.isDefaultLauncher())
+            } catch (exception: Throwable) {
+              AppsApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.waqt.AppManagerApi.requestDefaultLauncher$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.requestDefaultLauncher()
               listOf(null)
             } catch (exception: Throwable) {
               AppsApiPigeonUtils.wrapError(exception)

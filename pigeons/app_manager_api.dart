@@ -24,6 +24,9 @@ abstract class AppManagerApi {
   void openAppInfo(String packageName);
   bool openApp(String packageName);
   void uninstallApp(String packageName);
+
+  bool isDefaultLauncher();
+  void requestDefaultLauncher();
 }
 
 // Kotlin calling Dart (The Listener)
