@@ -6,7 +6,10 @@ import 'package:pigeon/pigeon.dart';
     dartOptions: DartOptions(),
     kotlinOut:
         'android/app/src/main/kotlin/com/example/waqt/ScreenLockApi.g.kt',
-    kotlinOptions: KotlinOptions(package: 'com.example.waqt'),
+    kotlinOptions: KotlinOptions(
+      package: 'com.example.waqt',
+      errorClassName: 'ScreenLockError',
+    ),
   ),
 )
 @HostApi()

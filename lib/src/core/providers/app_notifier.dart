@@ -6,16 +6,23 @@ import 'package:flutter/services.dart';
 
 import '../core.dart';
 import '../models/user_preference.dart';
+import '../services/apps_api.g.dart' hide AppInfo;
 import '../services/screen_lock_api.g.dart';
 
 class AppNotifier extends ChangeNotifier {
-  AppNotifier(this._db, this.service, this.screenLockApi) {
+  AppNotifier(
+    this._db,
+    this.service, {
+    required this.screenLockApi,
+    required this.appManagerApi,
+  }) {
     checkLockPermission();
   }
 
   final AppDatabase _db;
   final AppService service;
   final ScreenLockApi screenLockApi;
+  final AppManagerApi appManagerApi;
   AppDatabase get db => _db;
 
   final Set<AppInfo> _apps = {};
@@ -76,7 +83,7 @@ class AppNotifier extends ChangeNotifier {
 
   Future<void> launchApp(AppInfo app) async {
     try {
-      await service.launchApp(app);
+      await appManagerApi.openApp(app.packageName);
     } catch (e) {
       log("failed to launch app ${e.toString()}");
       _err = "failed to launch ${app.name}";
@@ -86,18 +93,17 @@ class AppNotifier extends ChangeNotifier {
 
   Future<void> openAppInfo(AppInfo app) async {
     try {
-      await service.openAppInfo(app);
+      await appManagerApi.openAppInfo(app.packageName);
     } catch (e) {
       _err = "failed to open app info ${app.name}";
       notifyListeners();
     }
   }
 
-  // FIXME: removed isn't working
   Future<void> unistallApp(AppInfo app) async {
     try {
-      await service.unistallApp(app);
-      print("app ${app.name} removed");
+      await appManagerApi.uninstallApp(app.packageName);
+      // TODO: refresh  the app
     } catch (e) {
       _err = "failed to unistall app ${app.name}";
       notifyListeners();
@@ -209,8 +215,6 @@ class AppNotifier extends ChangeNotifier {
   Future<void> lockScreen() async {
     try {
       await _lockScreen();
-      // await service.lockScreen();
-      //
     } catch (e) {
       setErr("please grant the permission");
     }

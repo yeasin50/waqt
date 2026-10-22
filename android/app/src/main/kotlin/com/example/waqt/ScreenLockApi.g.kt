@@ -20,7 +20,7 @@ private object ScreenLockApiPigeonUtils {
   }
 
   fun wrapError(exception: Throwable): List<Any?> {
-    return if (exception is FlutterError) {
+    return if (exception is ScreenLockError) {
       listOf(
         exception.code,
         exception.message,
@@ -42,7 +42,7 @@ private object ScreenLockApiPigeonUtils {
  * @property message The error message.
  * @property details The error details. Must be a datatype supported by the api codec.
  */
-class FlutterError (
+class ScreenLockError (
   val code: String,
   override val message: String? = null,
   val details: Any? = null

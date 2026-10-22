@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/core.dart';
+import '../core/services/apps_api.g.dart';
 import '../core/services/screen_lock_api.g.dart';
 import '../home_page.dart';
 import 'theme.dart';
@@ -13,7 +14,12 @@ class WaqtApp extends StatefulWidget {
 }
 
 class _WaqtAppState extends State<WaqtApp> {
-  final notifier = AppNotifier(AppDatabase(), AppService(), ScreenLockApi());
+  final notifier = AppNotifier(
+    AppDatabase(),
+    AppService(),
+    screenLockApi: ScreenLockApi(),
+    appManagerApi: AppManagerApi(),
+  );
 
   @override
   void initState() {

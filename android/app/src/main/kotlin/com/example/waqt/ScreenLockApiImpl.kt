@@ -29,13 +29,15 @@ class ScreenLockApiImpl(private val context: Context) : ScreenLockApi {
             if (service != null) {
                 service.lockDevice()
             } else {
-                throw FlutterError("NOT_ENABLED", "Accessibility service not enabled", null)
+                throw ScreenLockError("NOT_ENABLED", "Accessibility service not enabled", null)
             }
         } else {
-            throw FlutterError("UNSUPPORTED", "Requires Android 9.0+", null)
+            throw ScreenLockError("UNSUPPORTED", "Requires Android 9.0+", null)
         }
     }
 
+
+    /// theses two was created in  past, check issue #12
     override fun lockScreenAdmin() {
         val devicePolicyManager = 
             context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
@@ -47,6 +49,7 @@ class ScreenLockApiImpl(private val context: Context) : ScreenLockApi {
         }
     }
 
+    /// theses two was created in  past, check issue #12
     override fun requestLockPermission() {
         val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
             putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)

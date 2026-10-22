@@ -23,8 +23,14 @@ class MainActivity : FlutterActivity() {
         flutterEngine: FlutterEngine
     ) {
         super.configureFlutterEngine(flutterEngine)
-        val apiImpl = ScreenLockApiImpl(this)
-        ScreenLockApi.setUp(flutterEngine.dartExecutor.binaryMessenger, apiImpl)
+
+        val messenger = flutterEngine.dartExecutor.binaryMessenger
+
+        ScreenLockApi.setUp(messenger, ScreenLockApiImpl(this))
+
+        appChangeCallback = AppChangeCallback(messenger) //The Listener (Kotlin to Dart)
+        AppManagerApi.setUp(messenger, AppManagerApiImpl(this)) //The Commands (Dart to Kotlin)
+
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -89,7 +95,7 @@ class MainActivity : FlutterActivity() {
 
                     try {
                         val intent = Intent(
-                            Intent.ACTION_UNINSTALL_PACKAGE,
+                            Intent.ACTION_DELETE,
                             Uri.parse("package:$packageName")
                         )
                         intent.putExtra(Intent.EXTRA_RETURN_RESULT, true)
