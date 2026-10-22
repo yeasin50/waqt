@@ -15,7 +15,7 @@ class WaqtApp extends StatefulWidget {
 }
 
 class _WaqtAppState extends State<WaqtApp> {
-  final notifier = AppNotifier(
+  final notifier = WaqtAppNotifier(
     AppDatabase(),
     AppService(),
     screenLockApi: ScreenLockApi(),
@@ -29,7 +29,7 @@ class _WaqtAppState extends State<WaqtApp> {
 
     AppChangeCallback.setUp(
       AppChangeListener((pkg, event) async {
-        await notifier.getApps();
+        await notifier.getApps(); //FIXME:
       }),
     );
   }

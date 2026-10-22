@@ -19,8 +19,6 @@ class FavoriteAppList extends StatelessWidget {
       child: ListenableBuilder(
         listenable: provider,
         builder: (context, child) {
-          print(provider.favoriteApps);
-
           return Column(
             children: [
               for (final app in provider.favoriteApps)

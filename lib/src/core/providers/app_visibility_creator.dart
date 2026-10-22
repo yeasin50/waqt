@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
-import '../models/app_visiblity.dart';
+import '../models/app_visibility.dart';
 
-class AppVisiblityCreator extends ChangeNotifier {
-  AppVisiblityCreator([AppVisiblityInfo? initData]) {
+/// A specific notifier just to create & config single app;
+/// After config, just dump into [AppVisibilityProviderMixin] that will handled from [AppNotifier]
+///
+class AppVisibilityCreator extends ChangeNotifier {
+  AppVisibilityCreator([AppVisiblityInfo? initData]) {
     if (initData == null) return;
     _initData(initData);
   }

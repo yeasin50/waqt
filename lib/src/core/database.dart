@@ -2,7 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'hive_adapters.dart';
 import 'models/app_info.dart';
-import 'models/app_visiblity.dart';
+import 'models/app_visibility.dart';
 import 'models/user_preference.dart';
 
 class AppDatabase {

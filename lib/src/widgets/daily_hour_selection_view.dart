@@ -8,7 +8,7 @@ import 'section_title_builder.dart';
 class DailyHourSelectionView extends StatelessWidget {
   const DailyHourSelectionView({super.key, required this.creator});
 
-  final AppVisiblityCreator creator;
+  final AppVisibilityCreator creator;
 
   @override
   Widget build(BuildContext context) {
