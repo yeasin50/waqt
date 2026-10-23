@@ -34,10 +34,7 @@ mixin ScreenLockProviderMixin on AppNotifier {
     try {
       await screenLockApi.openAccessibilitySettings();
       log("eof openAccessibilitySettings");
-      // FIXME:  when  I comeback  from  openAccessibilitySettings page,  I do need to recheck  it again
-      await checkLockPermission(); // this is not working
     } catch (e) {
-      print("requestLockPermission ${e.toString()}");
       setErr("failed to request lock permission");
     }
   }
