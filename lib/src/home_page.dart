@@ -88,28 +88,14 @@ class _AppListView extends StatefulWidget {
 }
 
 class _AppListViewState extends State<_AppListView> {
-  late final provider = AppProvider.of(context).notifier;
-  late List<AppInfo> filteredApps = provider.apps;
-
   final searchController = TextEditingController();
-
-  void onSearch() {
-    final v = searchController.text;
-    if (v.trim().isEmpty) {
-      filteredApps = provider.apps;
-    } else {
-      filteredApps = provider.apps
-          .where((e) => e.name.toLowerCase().contains(v.toLowerCase()))
-          .toList();
-    }
-
-    setState(() {});
-  }
 
   @override
   void initState() {
     super.initState();
-    searchController.addListener(onSearch);
+    searchController.addListener(() {
+      AppProvider.of(context).notifier.onSearch(searchController.text);
+    });
   }
 
   @override
@@ -154,20 +140,32 @@ class _AppListViewState extends State<_AppListView> {
                     ),
                   ),
                 ),
-                ...filteredApps.map(
-                  (app) => AppTile(
-                    title: app.name,
-                    onTap: () {
-                      provider.launchApp(app);
-                      searchController.clear();
-                      // unFocuse again?
-                    },
-                    onLongPress: () => AppOptionBottomSheet.show(
-                      context: context,
-                      appInfo: app,
-                      provider: provider,
-                    ),
-                  ),
+
+                ListenableBuilder(
+                  listenable: AppProvider.of(context).notifier,
+                  builder: (context, child) {
+                    final provider = AppProvider.of(context).notifier;
+
+                    return Column(
+                      children: [
+                        ...provider.filteredApps.map(
+                          (app) => AppTile(
+                            title: app.name,
+                            onTap: () {
+                              provider.launchApp(app);
+                              searchController.clear();
+                              // unFocuse again?
+                            },
+                            onLongPress: () => AppOptionBottomSheet.show(
+                              context: context,
+                              appInfo: app,
+                              provider: provider,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
 
                 SizedBox(height: 96 + 24),

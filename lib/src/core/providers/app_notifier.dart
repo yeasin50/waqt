@@ -58,10 +58,15 @@ abstract class AppNotifier extends ChangeNotifier {
       //TODO: replace with pegion
       final result = await service.getInstalledApps();
 
-      final merged = <String, AppInfo>{
-        for (final app in result) app.packageName: app,
-        for (final app in _db.getAppConfigs()) app.packageName: app,
-      };
+      final configedApps = _db.getAppConfigs();
+
+      final merged = <String, AppInfo>{};
+      for (final app in result) {
+        final configed = configedApps.firstWhereOrNull(
+          (e) => e.packageName == app.packageName,
+        );
+        merged[app.packageName] = configed ?? app;
+      }
 
       final visibilityCongfigs = _db.getVisiblityCongis();
       for (final v in visibilityCongfigs) {
@@ -97,7 +102,7 @@ abstract class AppNotifier extends ChangeNotifier {
 
   Future<void> unistallApp(AppInfo app) async {
     await appManagerApi.uninstallApp(app.packageName);
-    // TODO: refresh  the app
+    // refresh  filtered apps
   }
 
   static const int _deltaGap = 1000;

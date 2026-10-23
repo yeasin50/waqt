@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'apps_api.g.dart';
 
+@Deprecated("This is not working properly. Check git issue #13")
 class AppChangeListener implements AppChangeCallback {
   const AppChangeListener(this.onChanged);
 

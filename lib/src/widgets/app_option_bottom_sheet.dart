@@ -60,7 +60,10 @@ class AppOptionBottomSheet extends StatelessWidget {
                 AppTile(
                   title: "Uninstall",
                   titleAlign: .start,
-                  onTap: () => provider.unistallApp(appInfo),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    provider.unistallApp(appInfo);
+                  },
                 ),
                 AppTile(
                   title:
