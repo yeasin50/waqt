@@ -1,72 +1,9 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'app_info.dart';
-import 'app_visiblity.dart';
-
-class AppInfoAdapter extends TypeAdapter<AppInfo> {
-  @override
-  AppInfo read(BinaryReader reader) {
-    return AppInfo(
-      reader.read(),
-      reader.read(),
-      favoriteIndex: reader.read(), //
-    );
-  }
-
-  @override
-  int get typeId => 1;
-
-  @override
-  void write(BinaryWriter writer, AppInfo obj) {
-    writer.write(obj.name);
-    writer.write(obj.packageName);
-    writer.write(obj.favoriteIndex);
-  }
-}
-
-class AppVisibilityAdapter extends TypeAdapter<AppVisiblityInfo> {
-  @override
-  int get typeId => 2;
-
-  @override
-  void write(BinaryWriter writer, AppVisiblityInfo obj) {
-    writer.write(obj.packageName);
-    writer.write(obj.mode);
-    writer.write(obj.weekDays);
-    writer.write(obj.monthDays);
-    writer.write(obj.dailyBlocksDurationInMin);
-    writer.write(obj.dailyblocks);
-  }
-
-  @override
-  AppVisiblityInfo read(BinaryReader reader) {
-    return AppVisiblityInfo(
-      packageName: reader.read(),
-      mode: reader.read(),
-      weekDays: reader.read(),
-      monthDays: reader.read(),
-      dailyBlocksDurationInMin: reader.read(),
-      dailyblocks: reader.read(),
-    );
-  }
-}
-
-class AppVisiblityModeAdapter extends TypeAdapter<AppVisiblityMode> {
-  @override
-  final int typeId = 100;
-
-  @override
-  AppVisiblityMode read(BinaryReader reader) {
-    return AppVisiblityMode.values[reader.readByte()];
-  }
-
-  @override
-  void write(BinaryWriter writer, AppVisiblityMode obj) {
-    writer.writeByte(obj.index);
-  }
-}
-
-class AppPreference {}
+import 'hive_adapters.dart';
+import 'models/app_info.dart';
+import 'models/app_visibility.dart';
+import 'models/user_preference.dart';
 
 class AppDatabase {
   static Future<void> init() async {
@@ -74,8 +11,10 @@ class AppDatabase {
     Hive.registerAdapter(AppInfoAdapter());
     Hive.registerAdapter(AppVisibilityAdapter());
     Hive.registerAdapter(AppVisiblityModeAdapter());
+    Hive.registerAdapter(UserPreferenceAdapter());
     await Hive.openBox<AppInfo>("app_configx");
     await Hive.openBox<AppVisiblityInfo>("app_visiblityx");
+    await Hive.openBox<UserPreference>("user_preferencex");
   }
 
   final _box = Hive.box<AppInfo>("app_configx");
@@ -96,5 +35,16 @@ class AppDatabase {
   void updateVisiblity(AppVisiblityInfo value) =>
       _visibilityBox.put(value.packageName, value);
 
-  AppPreference get preference => AppPreference();
+  /// ...
+
+  final _userPreferenceBox = Hive.box<UserPreference>("user_preferencex");
+  void updatePreference(UserPreference pref) => _userPreferenceBox.put(0, pref);
+
+  UserPreference preference([UserPreference defaulta = .empty]) {
+    if (_userPreferenceBox.values.isEmpty) {
+      _userPreferenceBox.put(0, defaulta); // dang naming
+    }
+
+    return _userPreferenceBox.values.first;
+  }
 }

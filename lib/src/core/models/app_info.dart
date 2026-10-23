@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'app_visiblity.dart';
+import 'app_visibility.dart';
 
 class AppInfo {
   const AppInfo(

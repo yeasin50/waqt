@@ -12,7 +12,7 @@ class AppVisiblityConfigPage extends StatefulWidget {
 
   final AppInfo appInfo;
 
-  static MaterialPageRoute route(AppInfo app, AppNotifier notifier) {
+  static MaterialPageRoute route(AppInfo app, WaqtAppNotifier notifier) {
     return MaterialPageRoute(
       builder: (context) => AppProvider(
         notifier: notifier,
@@ -26,7 +26,7 @@ class AppVisiblityConfigPage extends StatefulWidget {
 }
 
 class _AppVisiblityConfigPageState extends State<AppVisiblityConfigPage> {
-  late final AppVisiblityCreator creator = AppVisiblityCreator(
+  late final AppVisibilityCreator creator = AppVisibilityCreator(
     widget.appInfo.visiblityInfo,
   );
 

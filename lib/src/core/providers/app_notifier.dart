@@ -1,17 +1,37 @@
-import 'dart:developer';
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import 'core.dart';
+import '../core.dart';
+import '../services/apps_api.g.dart' hide AppInfo;
+import '../services/screen_lock_api.g.dart';
 
-class AppNotifier extends AppService with ChangeNotifier {
-  AppNotifier(this._db);
+/// the base notifier that will connect other mixin
+abstract class AppNotifier extends ChangeNotifier {
+  AppNotifier(
+    this._db,
+    this.service, {
+    required this.screenLockApi,
+    required this.appManagerApi,
+  });
 
   final AppDatabase _db;
+  AppDatabase get db => _db;
+
+  final AppService service;
+  final ScreenLockApi screenLockApi;
+  final AppManagerApi appManagerApi;
+
   final Set<AppInfo> _apps = {};
 
-  AppPreference get preference => _db.preference;
+  void removeApp(AppInfo app, [bool notify = false]) {
+    _apps.remove(app);
+    if (notify) notifyListeners();
+  }
+
+  void addApp(AppInfo app, [bool notify = false]) {
+    _apps.add(app);
+    if (notify) notifyListeners();
+  }
 
   UnmodifiableListView<AppInfo> get apps {
     final sortItems = _apps.toList()..sort((a, b) => a.name.compareTo(b.name));
@@ -27,16 +47,26 @@ class AppNotifier extends AppService with ChangeNotifier {
 
   String _err = "";
   String get err => _err;
+  void setErr(String msg) {
+    _err = msg;
+    notifyListeners();
+  }
 
   Future<void> getApps() async {
     try {
       _err = "";
-      final result = await super.getInstalledApps();
+      //TODO: replace with pegion
+      final result = await service.getInstalledApps();
 
-      final merged = <String, AppInfo>{
-        for (final app in result) app.packageName: app,
-        for (final app in _db.getAppConfigs()) app.packageName: app,
-      };
+      final configedApps = _db.getAppConfigs();
+
+      final merged = <String, AppInfo>{};
+      for (final app in result) {
+        final configed = configedApps.firstWhereOrNull(
+          (e) => e.packageName == app.packageName,
+        );
+        merged[app.packageName] = configed ?? app;
+      }
 
       final visibilityCongfigs = _db.getVisiblityCongis();
       for (final v in visibilityCongfigs) {
@@ -60,59 +90,19 @@ class AppNotifier extends AppService with ChangeNotifier {
     }
   }
 
-  /// Not certain whether I should just use the super class instead and handle exception  into ui,
-  /// But that will look bad
-  @override
   Future<void> launchApp(AppInfo app) async {
-    try {
-      await super.launchApp(app);
-    } catch (e) {
-      log("failed to launch app ${e.toString()}");
-      _err = "failed to launch ${app.name}";
-      notifyListeners();
-    }
+    final hasLaunched = await appManagerApi.openApp(app.packageName);
+
+    if (!hasLaunched) setErr("failed to launch ${app.name}");
   }
 
-  @override
   Future<void> openAppInfo(AppInfo app) async {
-    try {
-      await super.openAppInfo(app);
-    } catch (e) {
-      _err = "failed to open app info ${app.name}";
-      notifyListeners();
-    }
+    await appManagerApi.openAppInfo(app.packageName);
   }
 
-  // FIXME: removed isn't working
-  @override
   Future<void> unistallApp(AppInfo app) async {
-    try {
-      await super.unistallApp(app);
-      print("app ${app.name} removed");
-    } catch (e) {
-      _err = "failed to unistall app ${app.name}";
-      notifyListeners();
-    }
-  }
-
-  @override
-  Future<void> lockScreen() async {
-    try {
-      await super.lockScreen();
-    } catch (e) {
-      _err = "please grant the permission";
-      notifyListeners();
-    }
-  }
-
-  @override
-  Future<void> requestLockPermission() async {
-    try {
-      await super.requestLockPermission();
-    } catch (e) {
-      _err = "failed to request lock permission";
-      notifyListeners();
-    }
+    await appManagerApi.uninstallApp(app.packageName);
+    // refresh  filtered apps
   }
 
   static const int _deltaGap = 1000;
@@ -174,21 +164,6 @@ class AppNotifier extends AppService with ChangeNotifier {
     final updatedApp = movedApp.copyWith(favoriteIndex: () => newPosition);
     _db.updateConif(updatedApp);
     _apps.add(updatedApp);
-    notifyListeners();
-  }
-
-  void updateVibilityConfig(AppVisiblityInfo info) {
-    _db.updateVisiblity(info);
-    final app = _apps.firstWhereOrNull(
-      (e) => e.packageName == info.packageName,
-    );
-
-    if (app == null) return;
-
-    final temp = app.copyWith(visiblityInfo: info);
-    _apps.remove(app);
-    _apps.add(temp);
-
     notifyListeners();
   }
 }

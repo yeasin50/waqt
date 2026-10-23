@@ -39,7 +39,10 @@ class AppTile extends StatelessWidget {
             : Row(
                 mainAxisAlignment: .spaceBetween,
                 spacing: 24,
-                children: [titleWidget, tralling!],
+                children: [
+                  Expanded(child: titleWidget),
+                  tralling!,
+                ],
               ),
       ),
     );

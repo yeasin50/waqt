@@ -7,6 +7,12 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -14,6 +20,27 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     private val channel = "waqt/apps"
 
+    private var appChangeCallback: AppChangeCallback? = null
+
+    private val packageChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action
+
+            val eventType = when (action) {
+                Intent.ACTION_PACKAGE_ADDED -> "added"
+                Intent.ACTION_PACKAGE_REMOVED -> "removed"
+                Intent.ACTION_PACKAGE_REPLACED -> "replaced" 
+                Intent.ACTION_PACKAGE_CHANGED -> "changed" // app enabled/disabled
+                else -> return
+            }
+
+            val packageName = intent.data?.schemeSpecificPart ?: return
+
+            CoroutineScope(Dispatchers.Main).launch {
+                appChangeCallback?.onAppChanged(packageName, eventType)
+            }
+        }
+    }
 
     private val adminComponent by lazy {
         ComponentName(this, MyDeviceAdminReceiver::class.java)
@@ -23,6 +50,14 @@ class MainActivity : FlutterActivity() {
         flutterEngine: FlutterEngine
     ) {
         super.configureFlutterEngine(flutterEngine)
+
+        val messenger = flutterEngine.dartExecutor.binaryMessenger
+
+        ScreenLockApi.setUp(messenger, ScreenLockApiImpl(this))
+
+        appChangeCallback = AppChangeCallback(messenger) //The Listener (Kotlin to Dart)
+        AppManagerApi.setUp(messenger, AppManagerApiImpl(this)) //The Commands (Dart to Kotlin)
+
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -48,88 +83,29 @@ class MainActivity : FlutterActivity() {
 
                     result.success(apps)
                 }
-
-                "launchApp" -> {
-                    val packageName =
-                        call.argument<String>("packageName")
-
-                    val launchIntent = packageName?.let {
-                        packageManager.getLaunchIntentForPackage(it)
-                    }
-
-                    if (launchIntent != null) {
-                        startActivity(launchIntent)
-                        result.success(true)
-                    } else {
-                        result.error(
-                            "NOT_FOUND",
-                            "App cannot be launched",
-                            null
-                        )
-                    }
-                }
-
-                "openAppInfo" -> {
-                    val packageName = call.arguments as String
-
-                    val intent = Intent(
-                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.parse("package:$packageName")
-                    )
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    context.startActivity(intent)
-
-                    result.success(true)
-                }
-
-                "uninstallApp" -> {
-                   val packageName = call.arguments as String
-
-                    try {
-                        val intent = Intent(
-                            Intent.ACTION_UNINSTALL_PACKAGE,
-                            Uri.parse("package:$packageName")
-                        )
-                        intent.putExtra(Intent.EXTRA_RETURN_RESULT, true)
-                        startActivity(intent)
-                        result.success(true)
-                    } catch (e: Exception) {
-                        result.error("UNINSTALL_FAILED", e.message, null)
-                    }                
-                }
-
-                "requestLockPermission" -> {
-                    val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-                        putExtra(
-                            DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                            ComponentName(context, MyDeviceAdminReceiver::class.java)
-                        )
-                        putExtra(
-                            DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                            "Allow this app to lock the screen on double tap."
-                        )
-                    }
-
-                    context.startActivity(intent)
-                    result.success(true)
-                }
-
-                "lockScreen" -> {
-                    val devicePolicyManager =
-                        getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-
-                    if (devicePolicyManager.isAdminActive(adminComponent)) {
-                        devicePolicyManager.lockNow()
-                        result.success(true)
-                    } else {
-                        result.error("NOT_ADMIN", "Device admin not enabled", null)
-                    }
-                }
-
-
-
                 else -> result.notImplemented()
             }
         }
     }
+
+
+
+    override fun onStart() {
+        super.onStart()
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_CHANGED)
+            addAction(Intent.ACTION_PACKAGE_REPLACED)
+            addDataScheme("package")
+        }
+        registerReceiver(packageChangeReceiver, filter)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(packageChangeReceiver)
+    }
+
+
 }

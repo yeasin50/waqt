@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'core.dart' show AppNotifier;
+import '../core.dart' show WaqtAppNotifier;
 
 class AppProvider extends InheritedWidget {
   const AppProvider({super.key, required super.child, required this.notifier});
 
-  final AppNotifier notifier;
+  final WaqtAppNotifier notifier;
 
   @Deprecated("use notifier instead")
-  AppNotifier get service => notifier;
+  WaqtAppNotifier get service => notifier;
 
   static AppProvider of(BuildContext context) {
     final AppProvider? result = maybeOf(context);

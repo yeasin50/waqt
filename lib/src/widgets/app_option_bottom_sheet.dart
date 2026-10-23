@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../app_visiblity_config_page.dart';
+import '../app_visibility_config_page.dart';
 import '../core/core.dart';
 import 'app_tile.dart';
 
@@ -8,12 +8,12 @@ class AppOptionBottomSheet extends StatelessWidget {
   const AppOptionBottomSheet._({required this.appInfo, required this.provider});
 
   final AppInfo appInfo;
-  final AppNotifier provider;
+  final WaqtAppNotifier provider;
 
   static void show({
     required BuildContext context,
     required AppInfo appInfo,
-    required AppNotifier provider,
+    required WaqtAppNotifier provider,
   }) {
     /// ...
     showModalBottomSheet(
@@ -60,7 +60,10 @@ class AppOptionBottomSheet extends StatelessWidget {
                 AppTile(
                   title: "Uninstall",
                   titleAlign: .start,
-                  onTap: () => provider.unistallApp(appInfo),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    provider.unistallApp(appInfo);
+                  },
                 ),
                 AppTile(
                   title:

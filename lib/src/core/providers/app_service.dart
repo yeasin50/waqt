@@ -2,12 +2,14 @@ import 'dart:developer';
 
 import 'package:flutter/services.dart';
 
-import 'core.dart';
-import 'exceptions.dart';
+import '../core.dart';
+import '../exceptions.dart';
 
+@Deprecated("replaced with pigeon")
 const _channel = MethodChannel('waqt/apps');
 
-class AppService {
+@Deprecated("NO longer used, use [ScreenLockApi] instead")
+class AppService with PhoneLockMixin {
   Future<List<AppInfo>> getInstalledApps() async {
     try {
       final result = await _channel.invokeListMethod<Map>('getApps');
@@ -59,6 +61,19 @@ class AppService {
     } catch (e) {
       print("failed to unistallApp ${e.toString()}");
       throw FailedToUninstall();
+    }
+  }
+}
+
+@Deprecated("use pigeon's [AppManagerApi]")
+mixin PhoneLockMixin {
+  @deprecated
+  Future<bool> hasLockPermission() async {
+    try {
+      return await _channel.invokeMethod<bool>('checkLockPermission') ?? false;
+    } catch (e) {
+      log("failed to check lock permission: ${e.toString()}");
+      return false;
     }
   }
 
