@@ -13,18 +13,14 @@ mixin ScreenLockProviderMixin on AppNotifier {
     notifyListeners();
   }
 
-  Future<void> _lockScreen() async {
-    assert(hasLockPermission);
-    try {
-      await screenLockApi.lockScreen();
-    } on PlatformException catch (e) {
-      setErr("Lock failed: ${e.code} - ${e.message}");
-    }
-  }
-
   Future<void> lockScreen() async {
     try {
-      await _lockScreen();
+      assert(hasLockPermission);
+      try {
+        await screenLockApi.lockScreen();
+      } on PlatformException catch (e) {
+        setErr("Lock failed: ${e.code} - ${e.message}");
+      }
     } catch (e) {
       setErr("please grant the permission");
     }

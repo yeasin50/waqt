@@ -16,4 +16,16 @@ mixin UserPreferenceProvider on AppNotifier {
     db.updatePreference(updateValue);
     updatePreference(updateValue);
   }
+
+  bool _isDefaultLaucher = false;
+  bool get isDefaultLauncher => _isDefaultLaucher;
+
+  Future<void> checkIfDefaultLauncher() async {
+    _isDefaultLaucher = await appManagerApi.isDefaultLauncher();
+    notifyListeners();
+  }
+
+  Future<void> requestDefaultLauncher() async {
+    await appManagerApi.requestDefaultLauncher();
+  }
 }

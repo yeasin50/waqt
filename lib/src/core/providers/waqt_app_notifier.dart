@@ -15,5 +15,6 @@ class WaqtAppNotifier extends AppNotifier
     required super.appManagerApi,
   }) : super(_db, service) {
     checkLockPermission();
+    checkIfDefaultLauncher();
   }
 }

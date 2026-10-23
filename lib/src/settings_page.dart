@@ -32,8 +32,11 @@ class _SettingsPageState extends State<SettingsPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+
     if (state == .resumed) {
-      AppProvider.of(context).notifier.checkLockPermission();
+      AppProvider.of(context).notifier
+        ..checkLockPermission()
+        ..checkIfDefaultLauncher();
     }
   }
 
@@ -45,6 +48,7 @@ class _SettingsPageState extends State<SettingsPage>
         listenable: provider,
         builder: (context, child) {
           final bool hasLockPermission = provider.hasLockPermission;
+          final bool isDefaultLauncher = provider.isDefaultLauncher;
 
           return SafeArea(
             child: Padding(
@@ -99,6 +103,15 @@ class _SettingsPageState extends State<SettingsPage>
                           ],
                         ),
                       ),
+
+                      if (!isDefaultLauncher)
+                        AppTile(
+                          title: "Make default launcher",
+                          titleAlign: .start,
+                          onTap: provider.requestDefaultLauncher,
+                        )
+                      else
+                        Text("Already set as default"),
                     ],
                   ),
                 ],
