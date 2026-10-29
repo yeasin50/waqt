@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../core.dart';
 import '../services/apps_api.g.dart' hide AppInfo;
+import '../services/logger.dart';
 import '../services/screen_lock_api.g.dart';
 
 /// the base notifier that will connect other mixin
@@ -45,7 +46,8 @@ abstract class AppNotifier extends ChangeNotifier {
     return UnmodifiableListView(sortedItems);
   }
 
-  String _err = "";
+  /// TODO: specific error Type and create handler
+  String _err = "test error view";
   String get err => _err;
   void setErr(String msg) {
     _err = msg;
@@ -82,9 +84,10 @@ abstract class AppNotifier extends ChangeNotifier {
         ..addAll(merged.values);
 
       notifyListeners();
-    } catch (e) {
+    } catch (e, st) {
       _apps.clear();
       _err = "faled to get apps";
+      AppLogger.log("app_notifier.get_apps", _err, st);
 
       notifyListeners();
     }
@@ -93,7 +96,10 @@ abstract class AppNotifier extends ChangeNotifier {
   Future<void> launchApp(AppInfo app) async {
     final hasLaunched = await appManagerApi.openApp(app.packageName);
 
-    if (!hasLaunched) setErr("failed to launch ${app.name}");
+    if (!hasLaunched) {
+      setErr("failed to launch ${app.name}");
+      AppLogger.log("app_notifier.launchApp", _err, null);
+    }
   }
 
   Future<void> openAppInfo(AppInfo app) async {

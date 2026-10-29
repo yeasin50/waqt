@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/services.dart';
 
+import '../services/logger.dart';
 import 'app_notifier.dart';
 
 mixin ScreenLockProviderMixin on AppNotifier {
@@ -21,17 +20,18 @@ mixin ScreenLockProviderMixin on AppNotifier {
       } on PlatformException catch (e) {
         setErr("Lock failed: ${e.code} - ${e.message}");
       }
-    } catch (e) {
+    } catch (e, st) {
       setErr("please grant the permission");
+      AppLogger.log("ScreenLockProviderMixin.lockScreen", e, st);
     }
   }
 
   Future<void> requestLockPermission() async {
     try {
       await screenLockApi.openAccessibilitySettings();
-      log("eof openAccessibilitySettings");
-    } catch (e) {
+    } catch (e, st) {
       setErr("failed to request lock permission");
+      AppLogger.log("ScreenLockProviderMixin.requestLockPermission", e, st);
     }
   }
 }

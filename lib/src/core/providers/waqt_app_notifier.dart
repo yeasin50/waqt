@@ -1,6 +1,7 @@
 import '../core.dart';
 import 'app_filters.dart';
 import 'app_visibility_provider_mixin.dart';
+import 'error_handler_mixin.dart';
 import 'screen_lock_provider_mixin.dart';
 
 class WaqtAppNotifier extends AppNotifier
@@ -8,7 +9,8 @@ class WaqtAppNotifier extends AppNotifier
         ScreenLockProviderMixin,
         AppVisibilityProviderMixin,
         UserPreferenceProvider,
-        AppFilters {
+        AppFilters,
+        ErrorHandlerMixin {
   //...
   WaqtAppNotifier(
     AppDatabase _db,

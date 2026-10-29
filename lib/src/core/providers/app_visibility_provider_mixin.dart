@@ -1,4 +1,4 @@
-import '../core.dart' show AppNotifier, AppVisiblityCreator, AppVisiblityInfo;
+import '../core.dart' show AppNotifier, AppVisiblityInfo;
 
 import 'package:collection/collection.dart';
 
