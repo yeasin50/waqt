@@ -156,11 +156,15 @@ class _AppListViewState extends State<_AppListView> {
                               searchController.clear();
                               // unFocuse again?
                             },
-                            onLongPress: () => AppOptionBottomSheet.show(
-                              context: context,
-                              appInfo: app,
-                              provider: provider,
-                            ),
+                            onLongPress: () {
+                              FocusManager.instance.primaryFocus?.unfocus();
+
+                              AppOptionBottomSheet.show(
+                                context: context,
+                                appInfo: app,
+                                provider: provider,
+                              );
+                            },
                           ),
                         ),
                       ],
