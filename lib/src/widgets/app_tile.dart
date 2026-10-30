@@ -8,12 +8,29 @@ class AppTile extends StatelessWidget {
     this.onLongPress,
     this.titleAlign = .center,
     this.tralling,
+    this.isSetting = false,
   });
+
+  factory AppTile.setting({
+    required String title,
+    VoidCallback? onTap,
+    Widget? tralling,
+  }) {
+    return AppTile(
+      title: title,
+      onTap: onTap,
+      titleAlign: .start,
+      tralling: tralling,
+      isSetting: true,
+    );
+  }
 
   final String title;
   final TextAlign titleAlign;
   final VoidCallback? onTap, onLongPress;
   final Widget? tralling;
+
+  final bool isSetting;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +43,7 @@ class AppTile extends StatelessWidget {
       child: Text(
         title,
         textAlign: titleAlign,
-        style: style.bodyLarge?.copyWith(),
+        style: isSetting ? style.bodyLarge : style.bodyLarge?.copyWith(),
       ),
     );
     return InkWell(

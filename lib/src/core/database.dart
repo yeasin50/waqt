@@ -14,7 +14,7 @@ class AppDatabase {
     Hive.registerAdapter(UserPreferenceAdapter());
     await Hive.openBox<AppInfo>("app_configx");
     await Hive.openBox<AppVisiblityInfo>("app_visiblityx");
-    await Hive.openBox<UserPreference>("user_preferencex");
+    await Hive.openBox<UserPreference>("user_preferencexx");
   }
 
   final _box = Hive.box<AppInfo>("app_configx");
@@ -37,7 +37,7 @@ class AppDatabase {
 
   /// ...
 
-  final _userPreferenceBox = Hive.box<UserPreference>("user_preferencex");
+  final _userPreferenceBox = Hive.box<UserPreference>("user_preferencexx");
   void updatePreference(UserPreference pref) => _userPreferenceBox.put(0, pref);
 
   UserPreference preference([UserPreference defaulta = .empty]) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/core.dart';
-import 'settings_page.dart';
+import 'settings/settings_page.dart';
 import 'widgets/app_option_bottom_sheet.dart';
 import 'widgets/app_search_field.dart';
 import 'widgets/app_tile.dart';
@@ -45,9 +45,10 @@ class _HomeView extends StatelessWidget {
           final provider = AppProvider.of(context).notifier;
           return GestureDetector(
             behavior: .opaque,
-            onDoubleTap: provider.preference.enableDoubleTapLock
-                ? () => provider.lockScreen()
-                : null,
+            onDoubleTap: provider.lockScreen,
+            onLongPress: () {
+              Navigator.of(context).push(SettingsPage.route());
+            },
             child: Padding(
               padding: const .all(24.0),
               child: Column(

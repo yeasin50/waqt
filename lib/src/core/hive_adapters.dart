@@ -66,17 +66,55 @@ class AppVisiblityModeAdapter extends TypeAdapter<AppVisiblityMode> {
   }
 }
 
+// ONE MORE adapter changes,  gonna generate
 class UserPreferenceAdapter extends TypeAdapter<UserPreference> {
   @override
-  int get typeId => 3;
+  int get typeId => 4;
 
   @override
   UserPreference read(BinaryReader reader) {
-    return UserPreference(enableDoubleTapLock: reader.read());
+    return UserPreference(
+      enableDoubleTapLock: reader.readBool(),
+      quickSearch: reader.readBool(),
+      autoShowKeyboard: reader.readBool(),
+      searchOrder: reader.readString(),
+      searchAtBottom: reader.readBool(),
+      language: reader.readString(),
+      theme: reader.readString(),
+      useSystemFont: reader.readBool(),
+      customFont: reader.readString(),
+      itemSpacing: reader.readInt(),
+      fontSize: reader.readInt(),
+      showClock: reader.readBool(),
+      clockAlignment: reader.readInt(),
+      isLargeClock: reader.readBool(),
+      showDate: reader.readBool(),
+      appsNameAlignment: reader.readInt(),
+      footerLeft: reader.readString(),
+      footerRight: reader.readString(),
+    );
   }
 
   @override
   void write(BinaryWriter writer, UserPreference obj) {
-    writer.write(obj.enableDoubleTapLock);
+    writer
+      ..writeBool(obj.enableDoubleTapLock)
+      ..writeBool(obj.quickSearch)
+      ..writeBool(obj.autoShowKeyboard)
+      ..writeString(obj.searchOrder)
+      ..writeBool(obj.searchAtBottom)
+      ..writeString(obj.language)
+      ..writeString(obj.theme)
+      ..writeBool(obj.useSystemFont)
+      ..writeString(obj.customFont)
+      ..writeInt(obj.itemSpacing)
+      ..writeInt(obj.fontSize)
+      ..writeBool(obj.showClock)
+      ..writeInt(obj.clockAlignment)
+      ..writeBool(obj.isLargeClock)
+      ..writeBool(obj.showDate)
+      ..writeInt(obj.appsNameAlignment)
+      ..writeString(obj.footerLeft)
+      ..writeString(obj.footerRight);
   }
 }

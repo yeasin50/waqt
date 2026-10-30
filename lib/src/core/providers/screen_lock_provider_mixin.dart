@@ -13,8 +13,9 @@ mixin ScreenLockProviderMixin on AppNotifier {
   }
 
   Future<void> lockScreen() async {
+    if (hasLockPermission) return;
     try {
-      assert(hasLockPermission);
+      // assert(hasLockPermission);
       try {
         await screenLockApi.lockScreen();
       } on PlatformException catch (e) {
