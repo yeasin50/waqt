@@ -11,6 +11,11 @@ mixin UserPreferenceProvider on AppNotifier {
     notifyListeners();
   }
 
+  void updateSearch(SearchConfigs pref) {
+    _preference = preference.copyWith(search: pref);
+    notifyListeners();
+  }
+
   void toggleDoubleTapLoc(bool enable) {
     final updateValue = preference.copyWith(enableDoubleTapLock: enable);
     db.updatePreference(updateValue);

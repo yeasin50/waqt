@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../core/core.dart';
+
 class AppSearchField extends StatefulWidget {
-  const AppSearchField({super.key, required this.controller});
+  const AppSearchField({
+    super.key,
+    required this.controller,
+    this.autoFocus = false,
+  });
 
   final TextEditingController controller;
+
+  final bool autoFocus;
 
   @override
   State<AppSearchField> createState() => _AppSearchFieldState();
@@ -11,6 +19,31 @@ class AppSearchField extends StatefulWidget {
 
 class _AppSearchFieldState extends State<AppSearchField> {
   final FocusNode focusNode = FocusNode();
+
+  late PageController pageContoller = InheritedProvider.of<PageController>(
+    context,
+  );
+
+  void pageListener() {
+    assert(widget.autoFocus);
+
+    //TODO: test on release +  check dragEnd and then show
+    if (!focusNode.hasFocus && pageContoller.page! > .7) {
+      focusNode.requestFocus();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (!widget.autoFocus) return;
+
+    // can we we work  with NotificationListener instead
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      pageContoller.addListener(pageListener);
+    });
+  }
 
   @override
   void dispose() {

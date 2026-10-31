@@ -13,8 +13,8 @@ final class AppTheme {
         fontWeight: FontWeight.w300,
         letterSpacing: -3,
       ),
+
       bodyLarge: TextStyle(
-        fontSize: 22,
         fontWeight: .w400,
         color: Colors.white.withValues(alpha: 0.75),
       ),
@@ -23,6 +23,13 @@ final class AppTheme {
         color: Colors.white.withValues(alpha: 0.7),
       ),
       bodySmall: TextStyle(fontSize: 12, color: Color(0xFF999999)),
+
+      // for appTile
+      labelMedium: TextStyle(
+        fontSize: 22,
+        fontWeight: .w400,
+        color: Colors.white.withValues(alpha: 0.75),
+      ),
     ),
   );
 }

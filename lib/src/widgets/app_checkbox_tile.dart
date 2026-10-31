@@ -13,7 +13,8 @@ class AppCheckboxTile extends StatelessWidget {
 
   final String title;
   final bool isChecked;
-  final ValueChanged<bool> onTap;
+  final ValueChanged<bool>? onTap;
+
   @override
   Widget build(BuildContext context) {
     return AppTile.setting(
@@ -21,7 +22,7 @@ class AppCheckboxTile extends StatelessWidget {
       tralling: Flexible(
         child: Switch(value: isChecked, onChanged: onTap),
       ),
-      onTap: () => onTap(!isChecked),
+      onTap: onTap == null ? null : () => onTap!(!isChecked),
     );
   }
 }

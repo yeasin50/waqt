@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../core/core.dart';
 import '../favorite_apps_page.dart';
-import '../widgets/app_checkbox_tile.dart';
 import '../widgets/app_tile.dart' show AppTile;
 import 'widgets/lock_permission_tile.dart';
+import 'widgets/searc_settings_view.dart';
 
 class SettingsPage extends StatefulWidget {
   const new({super.key});
@@ -55,47 +55,36 @@ class _SettingsPageState extends State<SettingsPage>
           final bool isDefaultLauncher = provider.isDefaultLauncher;
           final preference = provider.preference;
           return SafeArea(
-            child: Padding(
-              padding: const .all(24.0),
-              child: CustomScrollView(
-                slivers: [
-                  SliverAppBar.large(title: Text("Setting")),
-                  SliverList.list(
-                    children: [
-                      if (!isDefaultLauncher) ...[
-                        AppTile.setting(
-                          title: "Make default launcher",
-                          onTap: provider.requestDefaultLauncher,
-                        ),
-                      ],
-
-                      spacer,
-
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar.large(title: Text("Setting")),
+                SliverList.list(
+                  children: [
+                    if (!isDefaultLauncher) ...[
                       AppTile.setting(
-                        title: "Favorite apps",
-                        onTap: () {
-                          Navigator.of(context).push(FavoriteAppsPage.route());
-                        },
-                      ),
-
-                      spacer,
-                      LockPermissionTile(),
-                      spacer,
-                      Divider(),
-
-                      AppCheckboxTile(
-                        title: "quick search",
-                        isChecked: preference.quickSearch,
-                        onTap: (v) {
-                          provider.updatePreference(
-                            preference.copyWith(quickSearch: v),
-                          );
-                        },
+                        title: "Make default launcher",
+                        padding: .symmetric(horizontal: 16, vertical: 12),
+                        onTap: provider.requestDefaultLauncher,
                       ),
                     ],
-                  ),
-                ],
-              ),
+
+                    spacer,
+
+                    AppTile.setting(
+                      title: "Favorite apps",
+                      padding: .symmetric(horizontal: 16, vertical: 12),
+                      onTap: () {
+                        Navigator.of(context).push(FavoriteAppsPage.route());
+                      },
+                    ),
+
+                    spacer,
+                    LockPermissionTile(),
+                    spacer,
+                    SearcSettingsView(),
+                  ],
+                ),
+              ],
             ),
           );
         },

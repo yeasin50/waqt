@@ -1,13 +1,9 @@
+part 'search_preference.dart';
+
 class UserPreference {
   const UserPreference({
     this.enableDoubleTapLock = false,
-
-    // Search
-    this.quickSearch = false,
-    this.autoShowKeyboard = false,
-    this.searchOrder = 'alphabet',
-    this.searchAtBottom = true,
-
+    this.search = const SearchConfigs(),
     // Appearance
     this.language = 'system',
     this.theme = 'system',
@@ -29,14 +25,7 @@ class UserPreference {
 
   final bool enableDoubleTapLock;
 
-  // Search
-  /// Automatically opens a single matching result.
-  final bool quickSearch;
-  final bool autoShowKeyboard;
-
-  /// alphabet, reverseAlpha, lastLaunch
-  final String searchOrder;
-  final bool searchAtBottom;
+  final SearchConfigs search;
 
   // Appearance
   final String language;
@@ -68,10 +57,7 @@ class UserPreference {
 
   UserPreference copyWith({
     bool? enableDoubleTapLock,
-    bool? quickSearch,
-    bool? autoShowKeyboard,
-    String? searchOrder,
-    bool? searchAtBottom,
+    SearchConfigs? search,
     String? language,
     String? theme,
     bool? useSystemFont,
@@ -88,10 +74,7 @@ class UserPreference {
   }) {
     return UserPreference(
       enableDoubleTapLock: enableDoubleTapLock ?? this.enableDoubleTapLock,
-      quickSearch: quickSearch ?? this.quickSearch,
-      autoShowKeyboard: autoShowKeyboard ?? this.autoShowKeyboard,
-      searchOrder: searchOrder ?? this.searchOrder,
-      searchAtBottom: searchAtBottom ?? this.searchAtBottom,
+      search: search ?? this.search,
       language: language ?? this.language,
       theme: theme ?? this.theme,
       useSystemFont: useSystemFont ?? this.useSystemFont,
@@ -109,11 +92,7 @@ class UserPreference {
   }
 
   Map<String, dynamic> toJson() => {
-    'enableDoubleTapLock': enableDoubleTapLock,
-    'quickSearch': quickSearch,
-    'autoShowKeyboard': autoShowKeyboard,
-    'searchOrder': searchOrder,
-    'searchAtBottom': searchAtBottom,
+    "search": search.toString(),
     'language': language,
     'theme': theme,
     'useSystemFont': useSystemFont,

@@ -20,18 +20,11 @@ class FavoriteAppList extends StatelessWidget {
         listenable: provider,
         builder: (context, child) {
           return Column(
+            mainAxisSize: .min,
             children: [
               for (final app in provider.favoriteApps)
                 AppTile(
                   title: app.name,
-                  // tralling: app.isFavtorite
-                  //     ? IconButton(
-                  //         icon: Icon(Icons.favorite_outlined),
-                  //         onPressed: () {
-                  //           provider.toggleFavorite(app, false);
-                  //         },
-                  //       )
-                  //     : null,
                   onTap: () => provider.launchApp(app),
                   onLongPress: () => AppOptionBottomSheet.show(
                     context: context,
@@ -54,6 +47,7 @@ class _EmptyFavoriteList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .stretch,
+      mainAxisSize: .min,
       children: [
         Text(
           'YOUR SPACE',

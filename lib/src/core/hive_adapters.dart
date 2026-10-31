@@ -71,14 +71,18 @@ class UserPreferenceAdapter extends TypeAdapter<UserPreference> {
   @override
   int get typeId => 4;
 
+  //! NO, Don't follow my pattern; if you don;t understand how hive works internally
   @override
   UserPreference read(BinaryReader reader) {
     return UserPreference(
       enableDoubleTapLock: reader.readBool(),
-      quickSearch: reader.readBool(),
-      autoShowKeyboard: reader.readBool(),
-      searchOrder: reader.readString(),
-      searchAtBottom: reader.readBool(),
+      search: SearchConfigs(
+        showSearch: reader.readBool(),
+        quickSearch: reader.readBool(),
+        autoShowKeyboard: reader.readBool(),
+        searchOrder: reader.readString(),
+        searchAtBottom: reader.readBool(),
+      ),
       language: reader.readString(),
       theme: reader.readString(),
       useSystemFont: reader.readBool(),
@@ -99,10 +103,11 @@ class UserPreferenceAdapter extends TypeAdapter<UserPreference> {
   void write(BinaryWriter writer, UserPreference obj) {
     writer
       ..writeBool(obj.enableDoubleTapLock)
-      ..writeBool(obj.quickSearch)
-      ..writeBool(obj.autoShowKeyboard)
-      ..writeString(obj.searchOrder)
-      ..writeBool(obj.searchAtBottom)
+      ..writeBool(obj.search.showSearch)
+      ..writeBool(obj.search.quickSearch)
+      ..writeBool(obj.search.autoShowKeyboard)
+      ..writeString(obj.search.searchOrder)
+      ..writeBool(obj.search.searchAtBottom)
       ..writeString(obj.language)
       ..writeString(obj.theme)
       ..writeBool(obj.useSystemFont)

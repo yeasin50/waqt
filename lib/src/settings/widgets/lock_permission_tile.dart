@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/core.dart';
 import '../../widgets/app_checkbox_tile.dart';
 import '../../widgets/app_tile.dart';
+import 'section_builder.dart';
 
 class LockPermissionTile extends StatelessWidget {
   const new({super.key});
@@ -15,27 +16,23 @@ class LockPermissionTile extends StatelessWidget {
       builder: (context, child) {
         final bool hasLockPermission = provider.hasLockPermission;
 
-        return Material(
-          shape: RoundedRectangleBorder(borderRadius: .circular(9)),
-          child: Column(
-            crossAxisAlignment: .stretch,
-            spacing: 8,
-            children: [
-              Text("Double tap lock screen"),
-              if (!hasLockPermission)
-                AppTile.setting(
-                  title: "Double tap lock permission",
-                  onTap: provider.requestLockPermission,
-                ),
+        return SectionBuilder(
+          label: "Double-Tap Lock",
+          children: [
+            if (!hasLockPermission)
+              AppTile.setting(
+                title: "Grant permission",
+                onTap: provider.requestLockPermission,
+              ),
 
-              if (hasLockPermission)
-                AppCheckboxTile(
-                  title: "double tap lock screen",
-                  isChecked: provider.preference.enableDoubleTapLock,
-                  onTap: provider.toggleDoubleTapLoc,
-                ),
-            ],
-          ),
+            AppCheckboxTile(
+              title: "Enable",
+              isChecked: provider.preference.enableDoubleTapLock,
+              onTap: !provider.hasLockPermission
+                  ? null
+                  : provider.toggleDoubleTapLoc,
+            ),
+          ],
         );
       },
     );

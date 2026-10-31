@@ -17,17 +17,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final PageController controller = PageController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: PageView(
-        physics: const BouncingScrollPhysics(),
-        onPageChanged: (page) {
-          if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
-        },
-        children: [_HomeView(), _AppListView()],
+      child: InheritedProvider<PageController>(
+        notifier: controller,
+        child: PageView(
+          physics: const BouncingScrollPhysics(),
+          controller: controller,
+          onPageChanged: (page) {
+            if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
+          },
+          children: [_HomeView(), _AppListView()],
+        ),
       ),
     );
   }
@@ -104,47 +116,31 @@ class _AppListViewState extends State<_AppListView> {
 
   @override
   Widget build(BuildContext context) {
-    final style = TextTheme.of(context);
+    return ListenableBuilder(
+      listenable: AppProvider.of(context).notifier,
+      builder: (context, child) {
+        final provider = AppProvider.of(context).notifier;
 
-    return Scaffold(
-      floatingActionButtonLocation: .centerDocked,
-      floatingActionButton: AppSearchField(controller: searchController),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverList.list(
-              children: [
-                SizedBox(
-                  height: 220,
-                  child: Align(
-                    alignment: Alignment(0, .25),
-                    child: Row(
-                      mainAxisAlignment: .spaceBetween,
-                      children: [
-                        SizedBox(width: 48),
-                        Text(
-                          "All Apps",
-                          style: style.headlineMedium?.copyWith(),
-                          textAlign: .center,
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.of(context).push(SettingsPage.route());
-                          },
-                          icon: Icon(Icons.settings_outlined),
-                          color: Colors.grey,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+        final searchPref = provider.preference.search;
 
-                ListenableBuilder(
-                  listenable: AppProvider.of(context).notifier,
-                  builder: (context, child) {
-                    final provider = AppProvider.of(context).notifier;
+        return Scaffold(
+          floatingActionButtonLocation: searchPref.searchAtBottom
+              ? .centerDocked
+              : .startTop,
+          floatingActionButton: searchPref.showSearch
+              ? AppSearchField(
+                  controller: searchController,
+                  autoFocus: searchPref.autoShowKeyboard,
+                )
+              : null,
+          body: SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                SliverList.list(
+                  children: [
+                    _AppListHeaderView(),
 
-                    return Column(
+                    Column(
                       children: [
                         ...provider.filteredApps.map(
                           (app) => AppTile(
@@ -166,16 +162,49 @@ class _AppListViewState extends State<_AppListView> {
                           ),
                         ),
                       ],
-                    );
-                  },
-                ),
+                    ),
 
-                SizedBox(height: 96 + 24),
+                    SizedBox(height: 96 + 24),
+                  ],
+                ),
               ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _AppListHeaderView extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 220,
+      child: Align(
+        alignment: Alignment(0, .25),
+        child: Row(
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            SizedBox(width: 48),
+            Text(
+              "All Apps",
+              style: TextTheme.of(context).headlineMedium?.copyWith(),
+              textAlign: .center,
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).push(SettingsPage.route());
+              },
+              icon: Icon(Icons.settings_outlined),
+              color: Colors.grey,
             ),
           ],
         ),
       ),
     );
+    ;
   }
 }
