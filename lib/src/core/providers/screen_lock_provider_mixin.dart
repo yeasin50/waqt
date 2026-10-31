@@ -13,7 +13,7 @@ mixin ScreenLockProviderMixin on AppNotifier {
   }
 
   Future<void> lockScreen() async {
-    if (hasLockPermission) return;
+    if (!hasLockPermission) return;
     try {
       // assert(hasLockPermission);
       try {

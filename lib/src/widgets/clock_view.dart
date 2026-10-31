@@ -72,6 +72,7 @@ class _ClockViewState extends State<ClockView> {
 
     return Column(
       crossAxisAlignment: .stretch,
+      mainAxisSize: .min,
       children: [
         Text(time, style: style.headlineLarge),
 

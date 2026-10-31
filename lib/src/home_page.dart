@@ -53,24 +53,21 @@ class _HomeView extends StatelessWidget {
               padding: const .all(24.0),
               child: Column(
                 crossAxisAlignment: .stretch,
+                spacing: 16,
                 children: [
-                  const Spacer(flex: 1),
                   Expanded(
-                    flex: 2,
+                    flex: 4,
                     child: Align(alignment: .centerLeft, child: ClockView()),
                   ),
-                  // const Spacer(flex: 3),
 
                   Expanded(
-                    flex: 3,
+                    flex: 4,
                     child: Align(
-                      alignment: .center,
-                      child: FavoriteAppList(),
+                      alignment: Alignment(0, .5),
+                      child: SingleChildScrollView(child: FavoriteAppList()),
                     ), // I may  limit only to 5
-                  ), //TODO: fixed size %height
-                  Expanded(
-                    child: Align(alignment: .bottomCenter, child: FooterView()),
                   ),
+                  Align(alignment: .bottomCenter, child: FooterView()),
                 ],
               ),
             ),

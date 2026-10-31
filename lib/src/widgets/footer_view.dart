@@ -21,8 +21,8 @@ class FooterView extends StatelessWidget {
           spacing: 8,
           children: [
             if (provider.err.isNotEmpty)
-              GestureDetector(
-                onTap: () {
+              TextButton(
+                onPressed: () {
                   provider.handleError();
                   Navigator.of(context).push(DebugScreen.route());
                 },
@@ -30,7 +30,20 @@ class FooterView extends StatelessWidget {
                   provider.err,
                   textAlign: .center,
                   style: style.bodyMedium?.copyWith(
-                    color: Colors.yellow,
+                    color: Colors.yellow, // FIXME: with scheme
+                    fontStyle: .italic,
+                  ),
+                ),
+              ),
+
+            if (!provider.isDefaultLauncher)
+              ElevatedButton(
+                onPressed: provider.requestDefaultLauncher,
+                child: Text(
+                  "Set Default & Stay Focused",
+                  textAlign: .center,
+                  style: style.bodyMedium?.copyWith(
+                    color: color.tertiary,
                     fontStyle: .italic,
                   ),
                 ),
