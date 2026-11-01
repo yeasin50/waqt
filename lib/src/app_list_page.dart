@@ -38,6 +38,12 @@ class _AppListViewState extends State<AppListView> {
       listenable: provider,
       builder: (context, child) {
         final searchPref = provider.preference.search;
+        final apps = provider.filteredApps;
+        if (provider.preference.search.showSearch && apps.length == 1) {
+          provider.launchApp(apps.first);
+          searchController.clear();
+          provider.onSearch("");
+        }
 
         return Scaffold(
           bottomNavigationBar: searchPref.showSearch
@@ -55,7 +61,7 @@ class _AppListViewState extends State<AppListView> {
 
                     Column(
                       children: [
-                        ...provider.filteredApps.map(
+                        ...apps.map(
                           (app) => AppTile(
                             title: app.name,
                             onTap: () {
@@ -65,7 +71,6 @@ class _AppListViewState extends State<AppListView> {
                             },
                             onLongPress: () {
                               FocusManager.instance.primaryFocus?.unfocus();
-
                               AppOptionBottomSheet.show(
                                 context: context,
                                 appInfo: app,
