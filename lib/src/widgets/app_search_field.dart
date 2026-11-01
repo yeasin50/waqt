@@ -36,13 +36,26 @@ class _AppSearchFieldState extends State<AppSearchField> {
   @override
   void initState() {
     super.initState();
-
     if (!widget.autoFocus) return;
 
     // can we we work  with NotificationListener instead
     WidgetsBinding.instance.addPostFrameCallback((_) {
       pageContoller.addListener(pageListener);
     });
+  }
+
+  late double width = width = MediaQuery.sizeOf(context).width;
+
+  bool isKeyboardOpened = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    width = MediaQuery.sizeOf(context).width;
+
+    final opened = MediaQuery.viewInsetsOf(context).bottom > 0;
+    if (isKeyboardOpened != opened) isKeyboardOpened = opened;
+    if (focusNode.hasFocus && !isKeyboardOpened) focusNode.unfocus();
   }
 
   @override
@@ -53,12 +66,8 @@ class _AppSearchFieldState extends State<AppSearchField> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-
     final theme = Theme.of(context);
     final style = theme.textTheme;
-
-    final isKeyboardOpened = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     print("rebuild"); //TODO: check  why  3x rebuilds
     return GestureDetector(

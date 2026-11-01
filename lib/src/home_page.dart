@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'app_list_page.dart';
 import 'core/core.dart';
 import 'settings/settings_page.dart';
-import 'widgets/app_option_bottom_sheet.dart';
-import 'widgets/app_search_field.dart';
-import 'widgets/app_tile.dart';
 import 'widgets/clock_view.dart';
 import 'widgets/favorite_app_list.dart';
 import 'widgets/footer_view.dart';
@@ -38,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onPageChanged: (page) {
             if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
           },
-          children: [_HomeView(), _AppListView()],
+          children: [_HomeView(), AppListView()],
         ),
       ),
     );
@@ -87,124 +85,5 @@ class _HomeView extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class _AppListView extends StatefulWidget {
-  const new();
-
-  @override
-  State<_AppListView> createState() => _AppListViewState();
-}
-
-class _AppListViewState extends State<_AppListView> {
-  final searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    searchController.addListener(() {
-      AppProvider.of(context).notifier.onSearch(searchController.text);
-    });
-  }
-
-  @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: AppProvider.of(context).notifier,
-      builder: (context, child) {
-        final provider = AppProvider.of(context).notifier;
-
-        final searchPref = provider.preference.search;
-
-        return Scaffold(
-          floatingActionButtonLocation: searchPref.searchAtBottom
-              ? .centerDocked
-              : .startTop,
-          floatingActionButton: searchPref.showSearch
-              ? AppSearchField(
-                  controller: searchController,
-                  autoFocus: searchPref.autoShowKeyboard,
-                )
-              : null,
-          body: SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverList.list(
-                  children: [
-                    _AppListHeaderView(),
-
-                    Column(
-                      children: [
-                        ...provider.filteredApps.map(
-                          (app) => AppTile(
-                            title: app.name,
-                            onTap: () {
-                              provider.launchApp(app);
-                              searchController.clear();
-                              // unFocuse again?
-                            },
-                            onLongPress: () {
-                              FocusManager.instance.primaryFocus?.unfocus();
-
-                              AppOptionBottomSheet.show(
-                                context: context,
-                                appInfo: app,
-                                provider: provider,
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 96 + 24),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _AppListHeaderView extends StatelessWidget {
-  const new();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 220,
-      child: Align(
-        alignment: Alignment(0, .25),
-        child: Row(
-          mainAxisAlignment: .spaceBetween,
-          children: [
-            SizedBox(width: 48),
-            Text(
-              "All Apps",
-              style: TextTheme.of(context).headlineMedium?.copyWith(),
-              textAlign: .center,
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(SettingsPage.route());
-              },
-              icon: Icon(Icons.settings_outlined),
-              color: Colors.grey,
-            ),
-          ],
-        ),
-      ),
-    );
-    ;
   }
 }
