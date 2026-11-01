@@ -70,28 +70,30 @@ class _AppSearchFieldState extends State<AppSearchField> {
     final style = theme.textTheme;
 
     print("rebuild"); //TODO: check  why  3x rebuilds
-    return GestureDetector(
-      onTap: () {
-        final primaryFocus = FocusManager.instance.primaryFocus;
-        if (primaryFocus == null) return;
+    return AnimatedPadding(
+      duration: .zero,
+      padding: .only(bottom: MediaQuery.viewInsetsOf(context).bottom + 24),
+      child: GestureDetector(
+        onTap: () {
+          final primaryFocus = FocusManager.instance.primaryFocus;
+          if (primaryFocus == null) return;
 
-        focusNode.hasFocus
-            ? primaryFocus.unfocus()
-            : primaryFocus.requestFocus(focusNode);
-      },
-      child: Container(
-        width: width,
-        alignment: .center,
-        height: 96 + 24,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: .topCenter,
-            end: .bottomCenter,
-            colors: [Colors.transparent, theme.scaffoldBackgroundColor],
+          focusNode.hasFocus
+              ? primaryFocus.unfocus()
+              : primaryFocus.requestFocus(focusNode);
+        },
+        child: Container(
+          //TODO:  can merge ig
+          width: width,
+          alignment: .center,
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: .topCenter,
+              end: .bottomCenter,
+              colors: [Colors.transparent, theme.scaffoldBackgroundColor],
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const .all(24.0),
           child: AnimatedContainer(
             duration: Durations.short3,
             width: (isKeyboardOpened ? .85 : .45) * width,
@@ -111,8 +113,8 @@ class _AppSearchFieldState extends State<AppSearchField> {
                 Positioned(
                   left: 24,
                   right: 24,
-                  bottom: 0,
                   top: 10,
+                  height: 64,
                   child: TextFormField(
                     controller: widget.controller,
                     focusNode: focusNode,

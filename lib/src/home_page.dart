@@ -75,7 +75,7 @@ class _HomeView extends StatelessWidget {
                     child: Align(
                       alignment: Alignment(0, -.1),
                       child: SingleChildScrollView(child: FavoriteAppList()),
-                    ), // I may  limit only to 5
+                    ),
                   ),
                   Align(alignment: .bottomCenter, child: FooterView()),
                 ],

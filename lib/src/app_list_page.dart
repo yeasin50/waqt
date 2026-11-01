@@ -40,10 +40,7 @@ class _AppListViewState extends State<AppListView> {
         final searchPref = provider.preference.search;
 
         return Scaffold(
-          floatingActionButtonLocation: searchPref.searchAtBottom
-              ? .centerDocked
-              : .startTop,
-          floatingActionButton: searchPref.showSearch
+          bottomNavigationBar: searchPref.showSearch
               ? AppSearchField(
                   controller: searchController,
                   autoFocus: searchPref.autoShowKeyboard,
