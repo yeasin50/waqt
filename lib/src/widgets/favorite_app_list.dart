@@ -21,6 +21,7 @@ class FavoriteAppList extends StatelessWidget {
         builder: (context, child) {
           return Column(
             mainAxisSize: .min,
+            spacing: 4,
             children: [
               for (final app in provider.favoriteApps)
                 AppTile(

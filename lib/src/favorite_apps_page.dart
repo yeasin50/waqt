@@ -20,21 +20,22 @@ class FavoriteAppsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     late final provider = AppProvider.of(context).notifier;
 
+    final style = TextTheme.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
           padding: const .all(8.0),
           child: CustomScrollView(
             slivers: [
-              SliverAppBar.large(
-                // title: Text("Favorite app" ),
+              SliverAppBar.medium(
+                pinned: true,
+                title: Text("Home apps", style: style.bodyLarge),
               ),
               _FavoriteApps(),
               SliverList.list(
                 children: [
-                  SizedBox(height: 48),
-                  Divider(),
-                  Text("other apps"),
+                  Text("Other apps"),
                   ListenableBuilder(
                     listenable: provider,
                     builder: (context, child) => Column(
@@ -63,6 +64,8 @@ class _FavoriteApps extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late final provider = AppProvider.of(context).notifier;
+
+    final style = TextTheme.of(context);
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Color draggableItemColor = colorScheme.secondary;
 
@@ -91,24 +94,46 @@ class _FavoriteApps extends StatelessWidget {
       listenable: provider,
       builder: (context, child) {
         late List<AppInfo> favoriteApps = provider.favoriteApps.toList();
-        return SliverReorderableList(
-          proxyDecorator: proxyDecorator,
-          itemCount: favoriteApps.length,
-          onReorderItem: provider.reOrderFavotireApp,
-          itemBuilder: (context, index) {
-            final app = favoriteApps[index];
-            return AppTile(
-              key: Key(app.packageName),
-              title: app.name,
-              onTap: () {
-                provider.toggleFavorite(app, false);
+        String adviceText = favoriteApps.length > 4
+            ? "Protect your focus. Keep only what truly matters, remove others."
+            : "";
+        return SliverMainAxisGroup(
+          slivers: [
+            SliverReorderableList(
+              proxyDecorator: proxyDecorator,
+              itemCount: favoriteApps.length,
+              onReorderItem: provider.reOrderFavotireApp,
+              itemBuilder: (context, index) {
+                final app = favoriteApps[index];
+                return AppTile(
+                  key: Key(app.packageName),
+                  title: app.name,
+                  onTap: () {
+                    provider.toggleFavorite(app, false);
+                  },
+                  tralling: ReorderableDragStartListener(
+                    index: index,
+                    child: Icon(Icons.drag_handle_outlined),
+                  ),
+                );
               },
-              tralling: ReorderableDragStartListener(
-                index: index,
-                child: Icon(Icons.drag_handle_outlined),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 64,
+                child: Center(
+                  child: Text(
+                    adviceText,
+                    textAlign: .center,
+                    style: style.bodyMedium?.copyWith(
+                      fontStyle: .italic,
+                      color: colorScheme.tertiary,
+                    ),
+                  ),
+                ),
               ),
-            );
-          },
+            ),
+          ],
         );
       },
     );

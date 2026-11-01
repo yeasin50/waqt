@@ -75,7 +75,7 @@ class _HomeView extends StatelessWidget {
                   Expanded(
                     flex: 4,
                     child: Align(
-                      alignment: Alignment(0, .5),
+                      alignment: Alignment(0, -.1),
                       child: SingleChildScrollView(child: FavoriteAppList()),
                     ), // I may  limit only to 5
                   ),
