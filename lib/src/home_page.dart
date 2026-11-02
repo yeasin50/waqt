@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
+
     controller.dispose();
   }
 
@@ -49,6 +50,7 @@ class _HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       body: ListenableBuilder(
         listenable: AppProvider.of(context).notifier,
         builder: (context, child) {
@@ -56,38 +58,40 @@ class _HomeView extends StatelessWidget {
           final appearance = provider.preference.appearance;
           final clockAlignment = appearance.clockAlignment.toDouble();
 
-          return GestureDetector(
-            behavior: .opaque,
-            onDoubleTap: provider.lockScreen,
-            onLongPress: () {
-              Navigator.of(context).push(SettingsPage.route());
-            },
-            child: Padding(
-              padding: const .all(24.0),
-              child: Column(
-                crossAxisAlignment: .stretch,
-                spacing: 16,
-                children: [
-                  Expanded(
-                    flex: 4,
-                    child: Align(
-                      alignment: Alignment(clockAlignment, 0),
-                      child: appearance.showClock
-                          ? ClockView(showDate: appearance.showDate)
-                          : SizedBox.shrink(), //TODO: I would rather not depends on flex to show [FavoriteAppList]
+          return SafeArea(
+            child: GestureDetector(
+              behavior: .opaque,
+              onDoubleTap: provider.lockScreen,
+              onLongPress: () {
+                Navigator.of(context).push(SettingsPage.route());
+              },
+              child: Padding(
+                padding: const .all(24.0),
+                child: Column(
+                  crossAxisAlignment: .stretch,
+                  spacing: 16,
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Align(
+                        alignment: Alignment(clockAlignment, 0),
+                        child: appearance.showClock
+                            ? ClockView(showDate: appearance.showDate)
+                            : SizedBox.shrink(), //TODO: I would rather not depends on flex to show [FavoriteAppList]
+                      ),
                     ),
-                  ),
 
-                  Expanded(
-                    flex: 4,
-                    child: Align(
-                      alignment: Alignment(0, -.1),
-                      child: SingleChildScrollView(child: FavoriteAppList()),
+                    Expanded(
+                      flex: 4,
+                      child: Align(
+                        alignment: Alignment(0, -.1),
+                        child: SingleChildScrollView(child: FavoriteAppList()),
+                      ),
                     ),
-                  ),
 
-                  Align(alignment: .bottomCenter, child: FooterView()),
-                ],
+                    Align(alignment: .bottomCenter, child: FooterView()),
+                  ],
+                ),
               ),
             ),
           );

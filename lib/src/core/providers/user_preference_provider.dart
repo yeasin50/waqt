@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import '../core.dart' show AppNotifier;
 import '../models/user_preference.dart';
 
@@ -26,6 +29,8 @@ mixin UserPreferenceProvider on AppNotifier {
     bool? showDate,
     int? appsNameAlignment,
   }) {
+    if (showStatusBar != null) _toggleStatusBar(showStatusBar);
+
     AppearanceSetting appearance = preference.appearance.copyWith();
     final updateValue = appearance.copyWith(
       showStatusBar: showStatusBar ?? appearance.showStatusBar,
@@ -68,5 +73,15 @@ mixin UserPreferenceProvider on AppNotifier {
 
   Future<void> requestDefaultLauncher() async {
     await appManagerApi.requestDefaultLauncher();
+  }
+
+  // FIXME: NOT SMOOTH +  toggle initial value
+  void _toggleStatusBar(bool show) {
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: show
+          ? [SystemUiOverlay.top, SystemUiOverlay.bottom]
+          : [SystemUiOverlay.bottom],
+    );
   }
 }

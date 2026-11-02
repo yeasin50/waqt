@@ -50,6 +50,8 @@ class _SettingsPageState extends State<SettingsPage>
     const spacer = SizedBox(height: 32);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
       body: ListenableBuilder(
         listenable: provider,
         builder: (context, child) {
