@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../core/core.dart';
 import '../favorite_apps_page.dart';
 import '../widgets/app_tile.dart' show AppTile;
+import 'appearance_settings.dart';
 import 'widgets/lock_permission_tile.dart';
-import 'widgets/searc_settings_view.dart';
+import 'search_settings_view.dart';
 
 class SettingsPage extends StatefulWidget {
   const new({super.key});
@@ -46,14 +47,13 @@ class _SettingsPageState extends State<SettingsPage>
   Widget build(BuildContext context) {
     final provider = AppProvider.of(context).notifier;
 
-    const spacer = SizedBox(height: 24);
+    const spacer = SizedBox(height: 32);
 
     return Scaffold(
       body: ListenableBuilder(
         listenable: provider,
         builder: (context, child) {
           final bool isDefaultLauncher = provider.isDefaultLauncher;
-          final preference = provider.preference;
           return SafeArea(
             child: CustomScrollView(
               slivers: [
@@ -73,6 +73,11 @@ class _SettingsPageState extends State<SettingsPage>
                     AppTile.setting(
                       title: "Favorite apps",
                       padding: .symmetric(horizontal: 16, vertical: 12),
+                      textStyle: TextTheme.of(context).titleMedium,
+                      tralling: Icon(
+                        Icons.arrow_forward_ios_outlined,
+                        size: 16,
+                      ),
                       onTap: () {
                         Navigator.of(context).push(FavoriteAppsPage.route());
                       },
@@ -82,6 +87,10 @@ class _SettingsPageState extends State<SettingsPage>
                     LockPermissionTile(),
                     spacer,
                     SearcSettingsView(),
+                    spacer,
+                    AppearanceSettings(),
+
+                    spacer,
                   ],
                 ),
               ],

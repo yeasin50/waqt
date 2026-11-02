@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.translucent,
+      behavior: .translucent,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: InheritedProvider<PageController>(
         notifier: controller,
@@ -53,6 +53,9 @@ class _HomeView extends StatelessWidget {
         listenable: AppProvider.of(context).notifier,
         builder: (context, child) {
           final provider = AppProvider.of(context).notifier;
+          final appearance = provider.preference.appearance;
+          final clockAlignment = appearance.clockAlignment.toDouble();
+
           return GestureDetector(
             behavior: .opaque,
             onDoubleTap: provider.lockScreen,
@@ -67,7 +70,12 @@ class _HomeView extends StatelessWidget {
                 children: [
                   Expanded(
                     flex: 4,
-                    child: Align(alignment: .centerLeft, child: ClockView()),
+                    child: Align(
+                      alignment: Alignment(clockAlignment, 0),
+                      child: appearance.showClock
+                          ? ClockView(showDate: appearance.showDate)
+                          : SizedBox.shrink(), //TODO: I would rather not depends on flex to show [FavoriteAppList]
+                    ),
                   ),
 
                   Expanded(
@@ -77,6 +85,7 @@ class _HomeView extends StatelessWidget {
                       child: SingleChildScrollView(child: FavoriteAppList()),
                     ),
                   ),
+
                   Align(alignment: .bottomCenter, child: FooterView()),
                 ],
               ),

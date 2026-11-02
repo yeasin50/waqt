@@ -83,17 +83,20 @@ class UserPreferenceAdapter extends TypeAdapter<UserPreference> {
         searchOrder: reader.readString(),
         searchAtBottom: reader.readBool(),
       ),
-      language: reader.readString(),
-      theme: reader.readString(),
-      useSystemFont: reader.readBool(),
-      customFont: reader.readString(),
-      itemSpacing: reader.readInt(),
-      fontSize: reader.readInt(),
-      showClock: reader.readBool(),
-      clockAlignment: reader.readInt(),
-      isLargeClock: reader.readBool(),
-      showDate: reader.readBool(),
-      appsNameAlignment: reader.readInt(),
+      appearance: AppearanceSetting(
+        showStatusBar: reader.readBool(),
+        language: reader.readString(),
+        theme: reader.readString(),
+        useSystemFont: reader.readBool(),
+        customFont: reader.readString(),
+        itemSpacing: reader.readInt(),
+        fontSize: reader.readInt(),
+        showClock: reader.readBool(),
+        clockAlignment: reader.readInt(),
+        isLargeClock: reader.readBool(),
+        showDate: reader.readBool(),
+        appsNameAlignment: reader.readInt(),
+      ),
       footerLeft: reader.readString(),
       footerRight: reader.readString(),
     );
@@ -108,17 +111,18 @@ class UserPreferenceAdapter extends TypeAdapter<UserPreference> {
       ..writeBool(obj.search.autoShowKeyboard)
       ..writeString(obj.search.searchOrder)
       ..writeBool(obj.search.searchAtBottom)
-      ..writeString(obj.language)
-      ..writeString(obj.theme)
-      ..writeBool(obj.useSystemFont)
-      ..writeString(obj.customFont)
-      ..writeInt(obj.itemSpacing)
-      ..writeInt(obj.fontSize)
-      ..writeBool(obj.showClock)
-      ..writeInt(obj.clockAlignment)
-      ..writeBool(obj.isLargeClock)
-      ..writeBool(obj.showDate)
-      ..writeInt(obj.appsNameAlignment)
+      ..writeBool(obj.appearance.showStatusBar)
+      ..writeString(obj.appearance.language)
+      ..writeString(obj.appearance.theme)
+      ..writeBool(obj.appearance.useSystemFont)
+      ..writeString(obj.appearance.customFont)
+      ..writeInt(obj.appearance.itemSpacing)
+      ..writeInt(obj.appearance.fontSize)
+      ..writeBool(obj.appearance.showClock)
+      ..writeInt(obj.appearance.clockAlignment)
+      ..writeBool(obj.appearance.isLargeClock)
+      ..writeBool(obj.appearance.showDate)
+      ..writeInt(obj.appearance.appsNameAlignment)
       ..writeString(obj.footerLeft)
       ..writeString(obj.footerRight);
   }

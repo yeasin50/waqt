@@ -10,6 +10,7 @@ class AppTile extends StatelessWidget {
     this.tralling,
     this.isSetting = false,
     this.padding = const .symmetric(vertical: 12),
+    this.textStyle,
   });
 
   factory AppTile.setting({
@@ -17,12 +18,14 @@ class AppTile extends StatelessWidget {
     VoidCallback? onTap,
     Widget? tralling,
     EdgeInsets? padding,
+    TextStyle? textStyle,
   }) {
     return AppTile(
       title: title,
       onTap: onTap,
       titleAlign: .start,
       tralling: tralling,
+      textStyle: textStyle,
       isSetting: true,
       padding: padding ?? (tralling == null ? .symmetric(vertical: 6) : .zero),
     );
@@ -36,6 +39,7 @@ class AppTile extends StatelessWidget {
   final bool isSetting;
 
   final EdgeInsets padding;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +52,7 @@ class AppTile extends StatelessWidget {
       child: Text(
         title,
         textAlign: titleAlign,
-        style: isSetting ? style.bodyLarge : style.labelMedium?.copyWith(),
+        style: textStyle ?? (isSetting ? style.bodyLarge : style.labelMedium),
       ),
     );
     return InkWell(

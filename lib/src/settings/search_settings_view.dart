@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../core/core.dart';
-import '../../widgets/app_checkbox_tile.dart';
-import 'section_builder.dart';
+import '../core/core.dart';
+import '../widgets/app_checkbox_tile.dart';
+import 'widgets/section_builder.dart';
 
 class SearcSettingsView extends StatelessWidget {
   const new({super.key});

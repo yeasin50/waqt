@@ -8,17 +8,53 @@ mixin UserPreferenceProvider on AppNotifier {
 
   void updatePreference(UserPreference pref) {
     _preference = pref;
+    db.updatePreference(pref);
+    notifyListeners();
+  }
+
+  void updateAppearance({
+    bool? showStatusBar,
+    String? theme,
+    String? language,
+    bool? useSystemFont,
+    String? customFont,
+    int? itemSpacing,
+    int? fontSize,
+    bool? showClock,
+    int? clockAlignment,
+    bool? isLargeClock,
+    bool? showDate,
+    int? appsNameAlignment,
+  }) {
+    AppearanceSetting appearance = preference.appearance.copyWith();
+    final updateValue = appearance.copyWith(
+      showStatusBar: showStatusBar ?? appearance.showStatusBar,
+      language: language ?? appearance.language,
+      theme: theme ?? appearance.theme,
+      useSystemFont: useSystemFont ?? appearance.useSystemFont,
+      customFont: customFont ?? appearance.customFont,
+      itemSpacing: itemSpacing ?? appearance.itemSpacing,
+      fontSize: fontSize ?? appearance.fontSize,
+      showClock: showClock ?? appearance.showClock,
+      clockAlignment: clockAlignment ?? appearance.clockAlignment,
+      isLargeClock: isLargeClock ?? appearance.isLargeClock,
+      showDate: showDate ?? appearance.showDate,
+      appsNameAlignment: appsNameAlignment ?? appearance.appsNameAlignment,
+    );
+
+    print("updatePreference ${clockAlignment} ${updateValue.clockAlignment}");
+
+    _preference = _preference.copyWith(appearance: updateValue);
+    // db.updatePreference(_preference);
     notifyListeners();
   }
 
   void updateSearch(SearchConfigs pref) {
-    _preference = preference.copyWith(search: pref);
-    notifyListeners();
+    updatePreference(preference.copyWith(search: pref));
   }
 
   void toggleDoubleTapLoc(bool enable) {
     final updateValue = preference.copyWith(enableDoubleTapLock: enable);
-    db.updatePreference(updateValue);
     updatePreference(updateValue);
   }
 
