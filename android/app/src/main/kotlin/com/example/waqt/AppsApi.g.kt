@@ -269,6 +269,7 @@ private open class AppsApiPigeonCodec : StandardMessageCodec() {
 
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface AppManagerApi {
+  fun getAppPackageName(): String
   fun openAppInfo(packageName: String)
   fun openApp(packageName: String): Boolean
   fun uninstallApp(packageName: String)
@@ -284,6 +285,21 @@ interface AppManagerApi {
     @JvmOverloads
     fun setUp(binaryMessenger: BinaryMessenger, api: AppManagerApi?, messageChannelSuffix: String = "") {
       val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.waqt.AppManagerApi.getAppPackageName$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getAppPackageName())
+            } catch (exception: Throwable) {
+              AppsApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
       run {
         val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.waqt.AppManagerApi.openAppInfo$separatedMessageChannelSuffix", codec)
         if (api != null) {

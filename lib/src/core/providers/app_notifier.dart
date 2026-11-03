@@ -54,31 +54,37 @@ abstract class AppNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  late String waqtPkgName;
+  Future<void> _whoAmI() async {
+    waqtPkgName = await appManagerApi.getAppPackageName();
+  }
+
   Future<void> getApps() async {
     try {
+      await _whoAmI(); // it really doesn't matter for tiny context call
+
+      // dart format off
       _err = "";
       //TODO: replace with pegion
       final result = await service.getInstalledApps();
-
       final configedApps = _db.getAppConfigs();
 
       final merged = <String, AppInfo>{};
+
       for (final app in result) {
-        final configed = configedApps.firstWhereOrNull(
-          (e) => e.packageName == app.packageName,
-        );
+        if (app.packageName == waqtPkgName) continue;
+
+        final configed = configedApps.firstWhereOrNull((e) => e.packageName == app.packageName);
         merged[app.packageName] = configed ?? app;
       }
 
       final visibilityCongfigs = _db.getVisiblityCongis();
       for (final v in visibilityCongfigs) {
         if (!merged.keys.contains(v.packageName)) continue;
-
-        merged[v.packageName] = merged[v.packageName]!.copyWith(
-          visiblityInfo: v,
-        );
+        merged[v.packageName] = merged[v.packageName]!.copyWith(visiblityInfo: v);
       }
-
+ 
+     // dart format on
       _apps
         ..clear()
         ..addAll(merged.values);
