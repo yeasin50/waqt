@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 import '../core.dart' show AppNotifier;
 import '../models/user_preference.dart';
 
@@ -16,7 +13,6 @@ mixin UserPreferenceProvider on AppNotifier {
   }
 
   void updateAppearance({
-    bool? showStatusBar,
     String? theme,
     String? language,
     bool? useSystemFont,
@@ -29,11 +25,8 @@ mixin UserPreferenceProvider on AppNotifier {
     bool? showDate,
     int? appsNameAlignment,
   }) {
-    if (showStatusBar != null) _toggleStatusBar(showStatusBar);
-
     AppearanceSetting appearance = preference.appearance.copyWith();
     final updateValue = appearance.copyWith(
-      showStatusBar: showStatusBar ?? appearance.showStatusBar,
       language: language ?? appearance.language,
       theme: theme ?? appearance.theme,
       useSystemFont: useSystemFont ?? appearance.useSystemFont,
@@ -47,10 +40,8 @@ mixin UserPreferenceProvider on AppNotifier {
       appsNameAlignment: appsNameAlignment ?? appearance.appsNameAlignment,
     );
 
-    print("updatePreference ${clockAlignment} ${updateValue.clockAlignment}");
-
     _preference = _preference.copyWith(appearance: updateValue);
-    // db.updatePreference(_preference);
+    db.updatePreference(_preference);
     notifyListeners();
   }
 
@@ -75,13 +66,8 @@ mixin UserPreferenceProvider on AppNotifier {
     await appManagerApi.requestDefaultLauncher();
   }
 
-  // FIXME: NOT SMOOTH +  toggle initial value
+  // ISSUE #22  FIXME: NOT SMOOTH +  toggle initial value
   void _toggleStatusBar(bool show) {
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: show
-          ? [SystemUiOverlay.top, SystemUiOverlay.bottom]
-          : [SystemUiOverlay.bottom],
-    );
+    throw UnimplementedError();
   }
 }

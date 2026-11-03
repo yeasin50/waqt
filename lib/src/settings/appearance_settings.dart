@@ -34,11 +34,6 @@ class AppearanceSettings extends StatelessWidget {
           label: "Appearance",
           children: [
             AppCheckboxTile(
-              title: "Show status bar",
-              isChecked: appearance.showStatusBar,
-              onTap: (v) => provider.updateAppearance(showStatusBar: v),
-            ),
-            AppCheckboxTile(
               title: "show clock",
               isChecked: appearance.showClock,
               onTap: (v) {
