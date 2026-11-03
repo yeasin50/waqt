@@ -72,7 +72,12 @@ class _AppSearchFieldState extends State<AppSearchField> {
     print("rebuild"); //TODO: check  why  3x rebuilds
     return AnimatedPadding(
       duration: .zero,
-      padding: .only(bottom: MediaQuery.viewInsetsOf(context).bottom + 24),
+      padding: .only(
+        bottom:
+            MediaQuery.viewInsetsOf(context).bottom +
+            MediaQuery.viewPaddingOf(context).bottom +
+            24,
+      ),
       child: GestureDetector(
         onTap: () {
           final primaryFocus = FocusManager.instance.primaryFocus;

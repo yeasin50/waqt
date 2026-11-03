@@ -81,7 +81,7 @@ class _AppListViewState extends State<AppListView> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 96 + 24),
+                    SizedBox(height: 96),
                   ],
                 ),
               ],
