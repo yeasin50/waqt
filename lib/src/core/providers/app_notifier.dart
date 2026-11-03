@@ -5,12 +5,14 @@ import '../core.dart';
 import '../services/apps_api.g.dart' hide AppInfo;
 import '../services/logger.dart';
 import '../services/screen_lock_api.g.dart';
+import '../services/statusbar_api.g.dart';
 
 /// the base notifier that will connect other mixin
 abstract class AppNotifier extends ChangeNotifier {
   AppNotifier(
     this._db,
     this.service, {
+    required this.statusBar,
     required this.screenLockApi,
     required this.appManagerApi,
   });
@@ -21,6 +23,7 @@ abstract class AppNotifier extends ChangeNotifier {
   final AppService service;
   final ScreenLockApi screenLockApi;
   final AppManagerApi appManagerApi;
+  final StatusbarFlutterApi statusBar;
 
   final Set<AppInfo> _apps = {};
 

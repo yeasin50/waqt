@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,6 +10,7 @@ import '../models/user_preference.dart';
 mixin UserPreferenceProvider on AppNotifier {
   late UserPreference _preference = db.preference();
   UserPreference get preference => _preference;
+  AppearanceSetting get appearance => preference.appearance;
 
   void updatePreference(UserPreference pref) {
     _preference = pref;
@@ -16,7 +19,6 @@ mixin UserPreferenceProvider on AppNotifier {
   }
 
   void updateAppearance({
-    bool? showStatusBar,
     String? theme,
     String? language,
     bool? useSystemFont,
@@ -29,11 +31,7 @@ mixin UserPreferenceProvider on AppNotifier {
     bool? showDate,
     int? appsNameAlignment,
   }) {
-    if (showStatusBar != null) _toggleStatusBar(showStatusBar);
-
-    AppearanceSetting appearance = preference.appearance.copyWith();
     final updateValue = appearance.copyWith(
-      showStatusBar: showStatusBar ?? appearance.showStatusBar,
       language: language ?? appearance.language,
       theme: theme ?? appearance.theme,
       useSystemFont: useSystemFont ?? appearance.useSystemFont,
@@ -75,13 +73,22 @@ mixin UserPreferenceProvider on AppNotifier {
     await appManagerApi.requestDefaultLauncher();
   }
 
-  // FIXME: NOT SMOOTH +  toggle initial value
-  void _toggleStatusBar(bool show) {
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: show
-          ? [SystemUiOverlay.top, SystemUiOverlay.bottom]
-          : [SystemUiOverlay.bottom],
+  /// if [show] is null then it get current value and switch it
+  /// [scaffoldBG] is gonna set on statusbar to mimic the it is full-screen; Because it left black which  is ugly
+  @Deprecated("Listening on ")
+  void toggleStatusBar({required bool show, required Color scaffoldBG}) {
+    /// damn  this is not good
+    final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    statusBar.setColor(color.toARGB32());
+    // SystemChrome.setEnabledSystemUIMode(
+    //   SystemUiMode.manual,
+    //   overlays: show
+    //       ? [SystemUiOverlay.top, SystemUiOverlay.bottom]
+    //       : [SystemUiOverlay.bottom],
+    // );
+    //
+    updatePreference(
+      preference.copyWith(appearance: appearance.copyWith(showStatusBar: show)),
     );
   }
 }

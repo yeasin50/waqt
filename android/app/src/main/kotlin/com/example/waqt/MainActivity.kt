@@ -59,6 +59,8 @@ class MainActivity : FlutterActivity() {
         AppManagerApi.setUp(messenger, AppManagerApiImpl(this)) //The Commands (Dart to Kotlin)
 
 
+        StatusbarFlutterApi.setUp(messenger, StatusBarService(this))
+
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             channel

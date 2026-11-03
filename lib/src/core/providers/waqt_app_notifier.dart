@@ -17,6 +17,7 @@ class WaqtAppNotifier extends AppNotifier
     AppService service, {
     required super.screenLockApi,
     required super.appManagerApi,
+    required super.statusBar,
   }) : super(_db, service) {
     checkLockPermission();
     checkIfDefaultLauncher();

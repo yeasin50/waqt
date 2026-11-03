@@ -4,6 +4,7 @@ import '../core/core.dart';
 import '../core/services/app_changes_listner.dart';
 import '../core/services/apps_api.g.dart';
 import '../core/services/screen_lock_api.g.dart';
+import '../core/services/statusbar_api.g.dart';
 import '../home_page.dart';
 import 'theme.dart';
 
@@ -20,6 +21,7 @@ class _WaqtAppState extends State<WaqtApp> with WidgetsBindingObserver {
     AppService(),
     screenLockApi: ScreenLockApi(),
     appManagerApi: AppManagerApi(),
+    statusBar: StatusbarFlutterApi(),
   );
 
   @override

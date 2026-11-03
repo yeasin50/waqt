@@ -43,6 +43,22 @@ class _SettingsPageState extends State<SettingsPage>
     }
   }
 
+  late Color _previousBG = Theme.of(context).scaffoldBackgroundColor;
+
+  // @override //NOTE: Let's ignore it
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   final color = Theme.of(context).scaffoldBackgroundColor;
+  //
+  //   print("BG updated ${color}");
+  //   //ig this trick  should work
+  //   // Failed: check  if not StatusBar color fail to update during theme change
+  //   if (_previousBG != color) {
+  //     _previousBG = color;
+  //     AppProvider.of(context).notifier.statusBar.setColor(color.toARGB32());
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     final provider = AppProvider.of(context).notifier;
@@ -50,16 +66,19 @@ class _SettingsPageState extends State<SettingsPage>
     const spacer = SizedBox(height: 32);
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
       body: ListenableBuilder(
         listenable: provider,
         builder: (context, child) {
           final bool isDefaultLauncher = provider.isDefaultLauncher;
-          return SafeArea(
+          return Padding(
+            padding: .zero,
             child: CustomScrollView(
               slivers: [
-                SliverAppBar.large(title: Text("Setting")),
+                // SliverAppBar.large(
+                //   title: Text("Setting"),
+                //   primary: false,
+                //   // systemOverlayStyle: ,
+                // ),
                 SliverList.list(
                   children: [
                     if (!isDefaultLauncher) ...[
