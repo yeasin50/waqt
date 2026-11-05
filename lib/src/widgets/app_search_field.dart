@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../core/core.dart';
@@ -69,15 +71,11 @@ class _AppSearchFieldState extends State<AppSearchField> {
     final theme = Theme.of(context);
     final style = theme.textTheme;
 
-    print("rebuild"); //TODO: check  why  3x rebuilds
+    final viewPadding = MediaQuery.viewPaddingOf(context).bottom;
+    final bottomPadding = MediaQuery.viewInsetsOf(context).bottom;
     return AnimatedPadding(
       duration: .zero,
-      padding: .only(
-        bottom:
-            MediaQuery.viewInsetsOf(context).bottom +
-            MediaQuery.viewPaddingOf(context).bottom +
-            24,
-      ),
+      padding: .only(bottom: 24 + max(viewPadding, bottomPadding)),
       child: GestureDetector(
         onTap: () {
           final primaryFocus = FocusManager.instance.primaryFocus;
