@@ -13,9 +13,12 @@ mixin ScreenLockProviderMixin on AppNotifier {
   }
 
   Future<void> lockScreen() async {
-    if (!hasLockPermission) return;
+    if (!hasLockPermission && db.preference().enableDoubleTapLock) {
+      await screenLockApi.requestLockPermission();
+      return;
+    }
+
     try {
-      // assert(hasLockPermission);
       try {
         await screenLockApi.lockScreen();
       } on PlatformException catch (e) {

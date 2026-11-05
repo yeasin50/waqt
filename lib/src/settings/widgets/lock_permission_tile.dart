@@ -15,23 +15,21 @@ class LockPermissionTile extends StatelessWidget {
       listenable: provider,
       builder: (context, child) {
         final bool hasLockPermission = provider.hasLockPermission;
+        final bool isLockEnabled = provider.preference.enableDoubleTapLock;
 
         return SectionBuilder(
           label: "Double-Tap Lock",
+          onTap: !hasLockPermission ? provider.requestLockPermission : null,
           children: [
+            // handled inside SectionBuilder
             if (!hasLockPermission)
-              AppTile.setting(
-                title: "Grant permission",
-                onTap: provider.requestLockPermission,
+              AppTile.setting(title: "Grant permission")
+            else
+              AppCheckboxTile(
+                title: "Enable",
+                isChecked: isLockEnabled,
+                onTap: provider.toggleDoubleTapLoc,
               ),
-
-            AppCheckboxTile(
-              title: "Enable",
-              isChecked: provider.preference.enableDoubleTapLock,
-              onTap: !provider.hasLockPermission
-                  ? null
-                  : provider.toggleDoubleTapLoc,
-            ),
           ],
         );
       },
