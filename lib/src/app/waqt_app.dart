@@ -61,11 +61,19 @@ class _WaqtAppState extends State<WaqtApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return AppProvider(
       notifier: notifier,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Waqt',
-        theme: AppTheme().baseTheme(context),
-        home: HomeScreen(),
+      child: ValueListenableBuilder(
+        /// the issue I don't want to update eveything but doing it
+        /// the separation  is because might want to refactor in future
+        valueListenable: notifier.themeNotifier,
+        builder: (context, value, child) {
+          print(value.primaryColor.toString());
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Waqt',
+            theme: value,
+            home: HomeScreen(),
+          );
+        },
       ),
     );
   }

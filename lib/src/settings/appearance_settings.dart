@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../core/core.dart';
+import '../core/providers/theme_provider.dart';
 import '../widgets/app_checkbox_tile.dart';
 import '../widgets/app_segmented_button_tile.dart';
+import 'widgets/color_row.dart';
 import 'widgets/section_builder.dart';
 
 class AppearanceSettings extends StatelessWidget {
@@ -33,6 +35,13 @@ class AppearanceSettings extends StatelessWidget {
         return SectionBuilder(
           label: "Appearance",
           children: [
+            ColorPickerRow(
+              selectedColor: Colors.greenAccent,
+              brightness: provider.theme.brightness,
+              colors: ThemeNotifier.themes.map((e) => Color(e.seed)).toList(),
+              onTap: provider.updateTheme,
+            ),
+
             AppCheckboxTile(
               title: "show clock",
               isChecked: appearance.showClock,
