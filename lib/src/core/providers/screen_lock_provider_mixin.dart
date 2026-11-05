@@ -13,8 +13,10 @@ mixin ScreenLockProviderMixin on AppNotifier {
   }
 
   Future<void> lockScreen() async {
-    if (!hasLockPermission && db.preference().enableDoubleTapLock) {
-      await screenLockApi.requestLockPermission();
+    if (!hasLockPermission) {
+      if (db.preference().enableDoubleTapLock) {
+        await screenLockApi.requestLockPermission();
+      }
       return;
     }
 
