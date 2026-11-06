@@ -20,7 +20,7 @@ class _WaqtAppState extends State<WaqtApp> with WidgetsBindingObserver {
     AppService(),
     screenLockApi: ScreenLockApi(),
     appManagerApi: AppManagerApi(),
-  );
+  )..loadTheme();
 
   @override
   void initState() {
@@ -66,7 +66,6 @@ class _WaqtAppState extends State<WaqtApp> with WidgetsBindingObserver {
         /// the separation  is because might want to refactor in future
         valueListenable: notifier.themeNotifier,
         builder: (context, value, child) {
-          print(value.primaryColor.toString());
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Waqt',

@@ -13,7 +13,8 @@ mixin UserPreferenceProvider on AppNotifier {
   }
 
   void updateAppearance({
-    String? theme,
+    bool? isDarkMode,
+    int? seedColor,
     String? language,
     bool? useSystemFont,
     String? customFont,
@@ -27,8 +28,9 @@ mixin UserPreferenceProvider on AppNotifier {
   }) {
     AppearanceSetting appearance = preference.appearance.copyWith();
     final updateValue = appearance.copyWith(
+      isDarkMode: isDarkMode ?? appearance.isDarkMode,
+      seedColor: seedColor ?? appearance.seedColor,
       language: language ?? appearance.language,
-      theme: theme ?? appearance.theme,
       useSystemFont: useSystemFont ?? appearance.useSystemFont,
       customFont: customFont ?? appearance.customFont,
       itemSpacing: itemSpacing ?? appearance.itemSpacing,

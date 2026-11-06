@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core.dart';
+import '../models/user_preference.dart';
 
 /// THE main thing I am  thinking; I just have to 3/4 styls, a simple extension  for theme is good enough
 /// The best thing you can do us just use Provider.select,
@@ -10,21 +11,37 @@ mixin ThemeNotifier on AppNotifier {
   ValueNotifier<ThemeData> get themeNotifier => _themeData;
   ThemeData get theme => _themeData.value;
 
-  void updateTheme(Brightness brightness, Color seed) {
-    //FIX #6 : someday  gonna create N  themes
-    if (brightness == .dark &&
-        themes.first.isDark &&
-        seed.toARGB32() == themes.first.seed) {
-      _themeData.value = _default;
-      return;
-    }
+  Brightness get brightness => _userPref.appearance.isDarkMode ? .dark : .light;
+  Color get seedColor => Color(_userPref.appearance.seedColor);
 
+  late UserPreference _userPref;
+
+  void loadTheme() {
+    _userPref = db.preference();
+    final appearance = _userPref.appearance;
+
+    updateTheme(
+      appearance.isDarkMode ? .dark : .light,
+      Color(appearance.seedColor),
+    );
+  }
+
+  void updateTheme(Brightness brightness, Color seed) {
     final scheme = ColorScheme.fromSeed(
       seedColor: seed,
       brightness: brightness,
     );
 
     _themeData.value = _generate(scheme);
+
+    _userPref = _userPref.copyWith(
+      appearance: _userPref.appearance.copyWith(
+        seedColor: seed.toARGB32(),
+        isDarkMode: brightness == .dark,
+      ),
+    );
+
+    db.updatePreference(_userPref);
   }
 
   ThemeData _generate(ColorScheme scheme) => ThemeData(
@@ -54,16 +71,17 @@ mixin ThemeNotifier on AppNotifier {
   );
 
   static const List<({String name, int seed, bool isDark})> themes = [
-    // huahaha;  idc about theme now ; so if first color match use [_default]
-    (name: 'Default', seed: 0xFF101010, isDark: true),
-    (name: 'Minimal', seed: 0xFFE0E0E0, isDark: true),
-    (name: 'Ocean', seed: 0xFF80CBC4, isDark: true),
-    (name: 'Blue', seed: 0xFF90CAF9, isDark: true),
-    (name: 'Violet', seed: 0xFFB39DDB, isDark: true),
-    (name: 'Warm', seed: 0xFFFFCC80, isDark: true),
+    (name: 'Default', seed: 0xFF607D8B, isDark: true),
+    (name: 'Ocean', seed: 0xFF00897B, isDark: true),
+    (name: 'Violet', seed: 0xFF9575CD, isDark: true),
+    (name: 'Warm', seed: 0xFFBF8050, isDark: true),
+    (name: 'Minimal', seed: 0xFF78909C, isDark: false),
+    (name: 'Blue', seed: 0xFF5472D3, isDark: false),
+    (name: 'Rose', seed: 0xFFCC7185, isDark: false),
   ];
 
   /// The theme I actually use
+  @deprecated
   ThemeData get _default => ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: const Color(0xFF101010),

@@ -56,6 +56,7 @@ class _ClockViewState extends State<ClockView> {
   @override
   Widget build(BuildContext context) {
     final style = TextTheme.of(context);
+    final scheme = ColorScheme.of(context);
 
     return Column(
       mainAxisSize: .min,
@@ -67,10 +68,7 @@ class _ClockViewState extends State<ClockView> {
         if (widget.showDate)
           Text(
             date,
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.white.withValues(alpha: 0.55),
-            ),
+            style: style.bodyLarge?.copyWith(color: scheme.onSurfaceVariant),
           ),
       ],
     );

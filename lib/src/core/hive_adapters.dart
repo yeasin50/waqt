@@ -86,6 +86,8 @@ class UserPreferenceAdapter extends TypeAdapter<UserPreference> {
       appearance: AppearanceSetting(
         showStatusBar: reader.readBool(),
         language: reader.readString(),
+        isDarkMode: reader.readBool(),
+        seedColor: reader.readInt(),
         theme: reader.readString(),
         useSystemFont: reader.readBool(),
         customFont: reader.readString(),
@@ -113,6 +115,8 @@ class UserPreferenceAdapter extends TypeAdapter<UserPreference> {
       ..writeBool(obj.search.searchAtBottom)
       ..writeBool(obj.appearance.showStatusBar)
       ..writeString(obj.appearance.language)
+      ..writeBool(obj.appearance.isDarkMode)
+      ..writeInt(obj.appearance.seedColor)
       ..writeString(obj.appearance.theme)
       ..writeBool(obj.appearance.useSystemFont)
       ..writeString(obj.appearance.customFont)

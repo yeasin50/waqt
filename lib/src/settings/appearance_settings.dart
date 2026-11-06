@@ -36,8 +36,8 @@ class AppearanceSettings extends StatelessWidget {
           label: "Appearance",
           children: [
             ColorPickerRow(
-              selectedColor: Colors.greenAccent,
-              brightness: provider.theme.brightness,
+              selectedColor: provider.seedColor,
+              brightness: provider.brightness,
               colors: ThemeNotifier.themes.map((e) => Color(e.seed)).toList(),
               onTap: provider.updateTheme,
             ),

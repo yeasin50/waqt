@@ -30,7 +30,7 @@ class FooterView extends StatelessWidget {
                   provider.err,
                   textAlign: .center,
                   style: style.bodyMedium?.copyWith(
-                    color: Colors.yellow, // FIXME: with scheme
+                    color: color.error,
                     fontStyle: .italic,
                   ),
                 ),
@@ -54,17 +54,15 @@ class FooterView extends StatelessWidget {
               children: [
                 Text(
                   'waqt',
-                  style: TextStyle(
-                    fontSize: 17,
+                  style: style.titleMedium?.copyWith(
                     letterSpacing: 2,
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: color.onSurface,
                   ),
                 ),
                 Text(
                   'Everything, in its time.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withValues(alpha: 0.4),
+                  style: style.bodySmall?.copyWith(
+                    color: color.onSurfaceVariant,
                   ),
                 ),
               ],

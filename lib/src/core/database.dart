@@ -6,9 +6,9 @@ import 'models/app_visibility.dart';
 import 'models/user_preference.dart';
 
 class AppDatabase {
-  static const String _configBoxName = "app_config_x2";
-  static const String _visibilityBoxName = "app_visiblity_x2";
-  static const String _userPrefBoxName = "user_preference_x2";
+  static const String _configBoxName = "app_config_x3";
+  static const String _visibilityBoxName = "app_visiblity_x3";
+  static const String _userPrefBoxName = "user_preference_x3";
 
   static Future<void> init() async {
     await Hive.initFlutter();

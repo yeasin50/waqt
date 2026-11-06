@@ -16,11 +16,17 @@ class AppearanceSetting {
     this.isLargeClock = false,
     this.showDate = true,
     this.appsNameAlignment = 0,
+    this.isDarkMode = true,
+    this.seedColor = 0xFF121212,
   });
 
   final bool showStatusBar;
   final String language;
 
+  final bool isDarkMode;
+  final int seedColor;
+
+  @Deprecated("Use [seedColor] and thememode instead")
   final String theme;
   final bool useSystemFont;
   final String customFont;
@@ -41,7 +47,9 @@ class AppearanceSetting {
 
   AppearanceSetting copyWith({
     bool? showStatusBar,
-    String? theme,
+
+    bool? isDarkMode,
+    int? seedColor,
     String? language,
     bool? useSystemFont,
     String? customFont,
@@ -56,7 +64,8 @@ class AppearanceSetting {
     return AppearanceSetting(
       showStatusBar: showStatusBar ?? this.showStatusBar,
       language: language ?? this.language,
-      theme: theme ?? this.theme,
+      isDarkMode: isDarkMode ?? this.isDarkMode,
+      seedColor: seedColor ?? this.seedColor,
       useSystemFont: useSystemFont ?? this.useSystemFont,
       customFont: customFont ?? this.customFont,
       itemSpacing: itemSpacing ?? this.itemSpacing,
@@ -72,6 +81,8 @@ class AppearanceSetting {
   Map<String, dynamic> toJson() => {
     "showStatusBar": showStatusBar,
     'language': language,
+    'isDarkMode': isDarkMode,
+    'seedColor': seedColor,
     'theme': theme,
     'useSystemFont': useSystemFont,
     'customFont': customFont,

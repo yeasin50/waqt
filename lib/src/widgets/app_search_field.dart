@@ -71,8 +71,18 @@ class _AppSearchFieldState extends State<AppSearchField> {
     final theme = Theme.of(context);
     final style = theme.textTheme;
 
+    final colors = theme.colorScheme;
     final viewPadding = MediaQuery.viewPaddingOf(context).bottom;
     final bottomPadding = MediaQuery.viewInsetsOf(context).bottom;
+
+    final decoration = BoxDecoration(
+      gradient: LinearGradient(
+        begin: .topCenter,
+        end: .bottomCenter,
+        colors: [colors.surface.withAlpha(10), colors.surface],
+      ),
+    );
+    // dart format off
     return AnimatedPadding(
       duration: .zero,
       padding: .only(bottom: 24 + max(viewPadding, bottomPadding)),
@@ -86,32 +96,22 @@ class _AppSearchFieldState extends State<AppSearchField> {
               : primaryFocus.requestFocus(focusNode);
         },
         child: Container(
-          //TODO:  can merge ig
           width: width,
           alignment: .center,
           height: 56,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: .topCenter,
-              end: .bottomCenter,
-              colors: [Colors.transparent, theme.scaffoldBackgroundColor],
-            ),
-          ),
+          decoration: decoration,
           child: AnimatedContainer(
             duration: Durations.short3,
             width: (isKeyboardOpened ? .85 : .45) * width,
             height: 48,
-            decoration: ShapeDecoration(
-              shape: StadiumBorder(),
-              color: theme.colorScheme.primaryContainer,
-            ),
+            decoration: ShapeDecoration(shape: const StadiumBorder(), color: colors.primaryContainer),
             padding: .symmetric(horizontal: 12),
             child: Stack(
               children: [
                 Positioned(
                   left: 8,
                   top: 12,
-                  child: const Icon(Icons.search, color: Colors.black87),
+                  child: Icon(Icons.search, color: colors.onPrimaryContainer),
                 ),
                 Positioned(
                   left: 24,
@@ -121,19 +121,21 @@ class _AppSearchFieldState extends State<AppSearchField> {
                   child: TextFormField(
                     controller: widget.controller,
                     focusNode: focusNode,
-                    cursorColor: Colors.grey,
+                    cursorColor: colors.primary,
                     cursorHeight: 22,
                     textAlign: .center,
+                    textAlignVertical: .center,
+                    style: style.bodyLarge?.copyWith(color: colors.onPrimaryContainer),
                     decoration: InputDecoration(
                       hintText: 'Search',
                       hintStyle: style.bodyLarge?.copyWith(
-                        color: Colors.black87,
+                        color: colors.onPrimaryContainer.withValues(
+                          alpha: 0.65,
+                        ),
                       ),
                       border: InputBorder.none,
                       isCollapsed: true,
                     ),
-                    style: style.bodyLarge?.copyWith(color: Colors.black),
-                    textAlignVertical: .center,
                   ),
                 ),
               ],
