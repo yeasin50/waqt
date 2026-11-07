@@ -1,25 +1,63 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
 import 'core/core.dart';
+import 'widgets/animated_list_item.dart';
 import 'widgets/app_tile.dart';
 
-class FavoriteAppsPage extends StatelessWidget {
+/// user config their home page apps
+class FavoriteAppsPage extends StatefulWidget {
   const new({super.key});
 
   static MaterialPageRoute route() {
-    return MaterialPageRoute(
-      builder: (context) {
-        return FavoriteAppsPage();
+    return MaterialPageRoute(builder: (context) => FavoriteAppsPage());
+  }
+
+  @override
+  State<FavoriteAppsPage> createState() => _FavoriteAppsPageState();
+}
+
+class _FavoriteAppsPageState extends State<FavoriteAppsPage> {
+  final _listKey = GlobalKey<SliverAnimatedListState>();
+
+  late List<AppInfo> apps = [];
+  late ListModel<AppInfo> _list;
+
+  @override
+  void initState() {
+    super.initState();
+
+    scheduleMicrotask(() {
+      final provider = AppProvider.of(context).notifier;
+      apps = provider.apps.where((e) => !e.isFavtorite).toList();
+      _list = ListModel<AppInfo>(
+        listKey: _listKey,
+        initialItems: apps.toList(),
+        removedItemBuilder: _buildRemovedItem,
+      );
+      setState(() {});
+    });
+  }
+
+  Widget _buildRemovedItem(AppInfo item, context, animation) =>
+      AppTile(animation: animation, title: item.name, onTap: null);
+
+  Widget _buildItem(context, int index, Animation<double> animation) {
+    return AppTile(
+      animation: animation,
+      title: _list[index].name,
+      onTap: () {
+        final provider = AppProvider.of(context).notifier;
+        _list.removeAt(index);
+        provider.toggleFavorite(apps[index]);
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    late final provider = AppProvider.of(context).notifier;
-
     final style = TextTheme.of(context);
 
     return Scaffold(
@@ -31,25 +69,18 @@ class FavoriteAppsPage extends StatelessWidget {
               SliverAppBar.medium(
                 pinned: true,
                 title: Text("Home apps", style: style.bodyLarge),
+                scrolledUnderElevation: 0,
               ),
               _FavoriteApps(),
-              SliverList.list(
-                children: [
-                  Text("Other apps"),
-                  ListenableBuilder(
-                    listenable: provider,
-                    builder: (context, child) => Column(
-                      children: <Widget>[
-                        for (final app in provider.apps.where(
-                          (e) => !e.isFavtorite,
-                        ))
-                          AppTile(
-                            title: app.name,
-                            onTap: () => provider.toggleFavorite(app),
-                          ),
-                      ],
+              SliverMainAxisGroup(
+                slivers: [
+                  SliverToBoxAdapter(child: Text("Other apps")),
+                  if (apps.isNotEmpty)
+                    SliverAnimatedList(
+                      key: _listKey,
+                      initialItemCount: _list.length,
+                      itemBuilder: _buildItem,
                     ),
-                  ),
                 ],
               ),
             ],

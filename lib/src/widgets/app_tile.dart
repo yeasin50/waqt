@@ -11,6 +11,7 @@ class AppTile extends StatelessWidget {
     this.isSetting = false,
     this.padding = const .symmetric(vertical: 12),
     this.textStyle,
+    this.animation,
   });
 
   factory AppTile.setting({
@@ -28,6 +29,7 @@ class AppTile extends StatelessWidget {
       textStyle: textStyle,
       isSetting: true,
       padding: padding ?? (tralling == null ? .symmetric(vertical: 6) : .zero),
+      animation: AlwaysStoppedAnimation(1),
     );
   }
 
@@ -40,6 +42,8 @@ class AppTile extends StatelessWidget {
 
   final EdgeInsets padding;
   final TextStyle? textStyle;
+
+  final Animation<double>? animation;
 
   @override
   Widget build(BuildContext context) {
@@ -58,18 +62,21 @@ class AppTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       onLongPress: onLongPress,
-      child: Padding(
-        padding: padding,
-        child: tralling == null
-            ? titleWidget
-            : Row(
-                mainAxisAlignment: .spaceBetween,
-                spacing: 24,
-                children: [
-                  Expanded(child: titleWidget),
-                  tralling!,
-                ],
-              ),
+      child: SizeTransition(
+        sizeFactor: animation ?? AlwaysStoppedAnimation(1.0),
+        child: Padding(
+          padding: padding,
+          child: tralling == null
+              ? titleWidget
+              : Row(
+                  mainAxisAlignment: .spaceBetween,
+                  spacing: 24,
+                  children: [
+                    Expanded(child: titleWidget),
+                    tralling!,
+                  ],
+                ),
+        ),
       ),
     );
   }
