@@ -162,6 +162,81 @@ class AppInfo {
   }
 }
 
+class InstalledWidget {
+  InstalledWidget({
+    required this.label,
+    required this.packageName,
+    required this.className,
+    required this.minWidth,
+    required this.minHeight,
+    this.previewImage,
+    this.icon,
+  });
+
+  String label;
+
+  String packageName;
+
+  String className;
+
+  int minWidth;
+
+  int minHeight;
+
+  Uint8List? previewImage;
+
+  Uint8List? icon;
+
+  List<Object?> _toList() {
+    return <Object?>[
+      label,
+      packageName,
+      className,
+      minWidth,
+      minHeight,
+      previewImage,
+      icon,
+    ];
+  }
+
+  Object encode() {
+    return _toList();  }
+
+  static InstalledWidget decode(Object result) {
+    result as List<Object?>;
+    return InstalledWidget(
+      label: result[0]! as String,
+      packageName: result[1]! as String,
+      className: result[2]! as String,
+      minWidth: result[3]! as int,
+      minHeight: result[4]! as int,
+      previewImage: result[5] as Uint8List?,
+      icon: result[6] as Uint8List?,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! InstalledWidget || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(label, other.label) && _deepEquals(packageName, other.packageName) && _deepEquals(className, other.className) && _deepEquals(minWidth, other.minWidth) && _deepEquals(minHeight, other.minHeight) && _deepEquals(previewImage, other.previewImage) && _deepEquals(icon, other.icon);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'InstalledWidget(label: $label, packageName: $packageName, className: $className, minWidth: $minWidth, minHeight: $minHeight, previewImage: $previewImage, icon: $icon)';
+  }
+}
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -173,6 +248,9 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is AppInfo) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
+    }    else if (value is InstalledWidget) {
+      buffer.putUint8(130);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -183,6 +261,8 @@ class _PigeonCodec extends StandardMessageCodec {
     switch (type) {
       case 129:
         return AppInfo.decode(readValue(buffer)!);
+      case 130:
+        return InstalledWidget.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -223,6 +303,44 @@ class AppManagerApi {
     )
     ;
     return pigeonVar_replyValue! as String;
+  }
+
+  Future<List<InstalledWidget>> getInstalledWidgets() async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.waqt.AppManagerApi.getInstalledWidgets$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: false,
+    )
+    ;
+    return (pigeonVar_replyValue! as List<Object?>).cast<InstalledWidget>();
+  }
+
+  Future<int> addWidget(String packageName, String className) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.waqt.AppManagerApi.addWidget$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[packageName, className]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: false,
+    )
+    ;
+    return pigeonVar_replyValue! as int;
   }
 
   Future<void> openAppInfo(String packageName) async {

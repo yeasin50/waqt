@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'app_list_page.dart';
 import 'core/core.dart';
 import 'settings/settings_page.dart';
+import 'widget_picker_page.dart';
 import 'widgets/clock_view.dart';
 import 'widgets/favorite_app_list.dart';
 import 'widgets/footer_view.dart';
@@ -20,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
-
     controller.dispose();
   }
 
@@ -51,6 +52,13 @@ class _HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      //TODO: remove after fixing colorScheme
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          // final route = ColorSchemeView.route(ColorScheme.of(context));
+          // Navigator.of(context).push(route);
+        },
+      ),
       body: ListenableBuilder(
         listenable: AppProvider.of(context).notifier,
         builder: (context, child) {
@@ -81,6 +89,8 @@ class _HomeView extends StatelessWidget {
                       ),
                     ),
 
+                    _HomeWidgetPrevew(),
+
                     Expanded(
                       flex: 4,
                       child: Align(
@@ -96,6 +106,52 @@ class _HomeView extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _HomeWidgetPrevew extends StatefulWidget {
+  const new({super.key});
+
+  @override
+  State<_HomeWidgetPrevew> createState() => _HomeWidgetPrevewState();
+}
+
+class _HomeWidgetPrevewState extends State<_HomeWidgetPrevew> {
+  int? widgetId;
+
+  void pickWidget() async {
+    final pickedWidget = await WidgetPickerPage.show(context);
+    if (pickedWidget == null || !context.mounted) return;
+
+    final api = AppProvider.of(context).notifier.appManagerApi;
+    widgetId = await api.addWidget(
+      pickedWidget.packageName,
+      pickedWidget.className,
+    );
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: pickWidget,
+      child: Column(
+        mainAxisSize: .min,
+        children: [
+          if (widgetId == null)
+            Icon(Icons.widgets)
+          else
+            SizedBox(
+              height: 120,
+              child: AndroidView(
+                viewType: 'native_app_widget',
+                creationParams: {'widgetId': widgetId},
+                creationParamsCodec: const StandardMessageCodec(),
+              ),
+            ),
+        ],
       ),
     );
   }

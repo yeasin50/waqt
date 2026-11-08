@@ -6,11 +6,68 @@ import android.net.Uri
 import android.provider.Settings 
 import android.content.pm.PackageManager
 
+import android.content.ComponentName
+import android.appwidget.AppWidgetHostView
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetHost
+
+
 class AppManagerApiImpl(private val context: Context) : AppManagerApi {
 
     override fun getAppPackageName(): String {
         return context.packageName
     }
+
+    override fun getInstalledWidgets(): List<InstalledWidget> {
+        val manager = AppWidgetManager.getInstance(context)
+
+        return manager.installedProviders.map { info ->
+            InstalledWidget(
+                label = info.loadLabel(context.packageManager).toString(),
+                packageName = info.provider.packageName,
+                className = info.provider.className,
+                minWidth = info.minWidth.toLong(),
+                minHeight = info.minHeight.toLong(),
+                previewImage = drawableToByteArray(context, info.provider.packageName, info.previewImage),
+                icon = drawableToByteArray(context, info.provider.packageName, info.icon)
+            )
+        }
+    }
+
+    private val appWidgetHost by lazy {
+        AppWidgetHost(context, 1024)
+    }
+
+    override fun addWidget(packageName: String, className: String): Long {
+        val manager = AppWidgetManager.getInstance(context)
+        val provider = ComponentName(packageName, className)
+
+        val info = manager.installedProviders
+        .firstOrNull { it.provider == provider }
+        ?: throw IllegalArgumentException("Widget provider not found")
+
+        val widgetId = appWidgetHost.allocateAppWidgetId()
+        val bound = manager.bindAppWidgetIdIfAllowed(widgetId, provider)
+
+        if (!bound) {
+            appWidgetHost.deleteAppWidgetId(widgetId)
+            throw IllegalStateException("Widget binding not allowed")
+        }
+
+        return widgetId.toLong()
+    }
+
+    fun getWidgetView(widgetId: Int): AppWidgetHostView {
+        val manager = AppWidgetManager.getInstance(context)
+
+        val info = manager.getAppWidgetInfo(widgetId)
+        ?: throw IllegalArgumentException("Widget not found")
+
+        return appWidgetHost.createView(context, widgetId, info).apply {
+            setAppWidget(widgetId, info)
+        }
+    }
+
 
     override fun openAppInfo(packageName: String) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {

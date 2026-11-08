@@ -245,12 +245,78 @@ data class AppInfo (
     return "AppInfo(name=$name, packageName=$packageName, versionName=$versionName)"
   }
 }
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class InstalledWidget (
+  val label: String,
+  val packageName: String,
+  val className: String,
+  val minWidth: Long,
+  val minHeight: Long,
+  val previewImage: ByteArray? = null,
+  val icon: ByteArray? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): InstalledWidget {
+      val label = pigeonVar_list[0] as String
+      val packageName = pigeonVar_list[1] as String
+      val className = pigeonVar_list[2] as String
+      val minWidth = pigeonVar_list[3] as Long
+      val minHeight = pigeonVar_list[4] as Long
+      val previewImage = pigeonVar_list[5] as ByteArray?
+      val icon = pigeonVar_list[6] as ByteArray?
+      return InstalledWidget(label, packageName, className, minWidth, minHeight, previewImage, icon)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      label,
+      packageName,
+      className,
+      minWidth,
+      minHeight,
+      previewImage,
+      icon,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as InstalledWidget
+    return AppsApiPigeonUtils.deepEquals(this.label, other.label) && AppsApiPigeonUtils.deepEquals(this.packageName, other.packageName) && AppsApiPigeonUtils.deepEquals(this.className, other.className) && AppsApiPigeonUtils.deepEquals(this.minWidth, other.minWidth) && AppsApiPigeonUtils.deepEquals(this.minHeight, other.minHeight) && AppsApiPigeonUtils.deepEquals(this.previewImage, other.previewImage) && AppsApiPigeonUtils.deepEquals(this.icon, other.icon)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + AppsApiPigeonUtils.deepHash(this.label)
+    result = 31 * result + AppsApiPigeonUtils.deepHash(this.packageName)
+    result = 31 * result + AppsApiPigeonUtils.deepHash(this.className)
+    result = 31 * result + AppsApiPigeonUtils.deepHash(this.minWidth)
+    result = 31 * result + AppsApiPigeonUtils.deepHash(this.minHeight)
+    result = 31 * result + AppsApiPigeonUtils.deepHash(this.previewImage)
+    result = 31 * result + AppsApiPigeonUtils.deepHash(this.icon)
+    return result
+  }
+  override fun toString(): String {
+    return "InstalledWidget(label=$label, packageName=$packageName, className=$className, minWidth=$minWidth, minHeight=$minHeight, previewImage=${previewImage?.contentToString()}, icon=${icon?.contentToString()})"
+  }
+}
 private open class AppsApiPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
       129.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
           AppInfo.fromList(it)
+        }
+      }
+      130.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          InstalledWidget.fromList(it)
         }
       }
       else -> super.readValueOfType(type, buffer)
@@ -262,6 +328,10 @@ private open class AppsApiPigeonCodec : StandardMessageCodec() {
         stream.write(129)
         writeValue(stream, value.toList())
       }
+      is InstalledWidget -> {
+        stream.write(130)
+        writeValue(stream, value.toList())
+      }
       else -> super.writeValue(stream, value)
     }
   }
@@ -270,6 +340,8 @@ private open class AppsApiPigeonCodec : StandardMessageCodec() {
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface AppManagerApi {
   fun getAppPackageName(): String
+  fun getInstalledWidgets(): List<InstalledWidget>
+  fun addWidget(packageName: String, className: String): Long
   fun openAppInfo(packageName: String)
   fun openApp(packageName: String): Boolean
   fun uninstallApp(packageName: String)
@@ -291,6 +363,39 @@ interface AppManagerApi {
           channel.setMessageHandler { _, reply ->
             val wrapped: List<Any?> = try {
               listOf(api.getAppPackageName())
+            } catch (exception: Throwable) {
+              AppsApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.waqt.AppManagerApi.getInstalledWidgets$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getInstalledWidgets())
+            } catch (exception: Throwable) {
+              AppsApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.waqt.AppManagerApi.addWidget$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val packageNameArg = args[0] as String
+            val classNameArg = args[1] as String
+            val wrapped: List<Any?> = try {
+              listOf(api.addWidget(packageNameArg, classNameArg))
             } catch (exception: Throwable) {
               AppsApiPigeonUtils.wrapError(exception)
             }

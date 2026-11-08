@@ -18,10 +18,33 @@ class AppInfo {
   String versionName;
 }
 
+class InstalledWidget {
+  InstalledWidget({
+    required this.label,
+    required this.packageName,
+    required this.className,
+    required this.minWidth,
+    required this.minHeight,
+    required this.previewImage,
+    required this.icon,
+  });
+
+  String label;
+  String packageName;
+  String className;
+  int minWidth;
+  int minHeight;
+
+  Uint8List? previewImage;
+  Uint8List? icon;
+}
+
 // Dart calling Kotlin (Commands)
 @HostApi()
 abstract class AppManagerApi {
   String getAppPackageName();
+  List<InstalledWidget> getInstalledWidgets();
+  int addWidget(String packageName, String className);
 
   void openAppInfo(String packageName);
   bool openApp(String packageName);

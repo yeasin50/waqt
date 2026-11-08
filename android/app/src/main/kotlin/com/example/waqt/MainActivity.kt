@@ -46,6 +46,8 @@ class MainActivity : FlutterActivity() {
         ComponentName(this, MyDeviceAdminReceiver::class.java)
     }
 
+    private lateinit var appManager: AppManagerApiImpl
+
     override fun configureFlutterEngine(
         flutterEngine: FlutterEngine
     ) {
@@ -53,11 +55,19 @@ class MainActivity : FlutterActivity() {
 
         val messenger = flutterEngine.dartExecutor.binaryMessenger
 
+
         ScreenLockApi.setUp(messenger, ScreenLockApiImpl(this))
-
         appChangeCallback = AppChangeCallback(messenger) //The Listener (Kotlin to Dart)
-        AppManagerApi.setUp(messenger, AppManagerApiImpl(this)) //The Commands (Dart to Kotlin)
 
+        appManager = AppManagerApiImpl(this)
+        AppManagerApi.setUp(messenger, appManager) //The Commands (Dart to Kotlin)
+
+                
+        flutterEngine.platformViewsController.registry // for widgets view
+        .registerViewFactory(
+            "native_app_widget",
+            WidgetPlatformViewFactory(appManager)
+        )
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
