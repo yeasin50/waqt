@@ -21,6 +21,8 @@ class AppInfo {
 // Dart calling Kotlin (Commands)
 @HostApi()
 abstract class AppManagerApi {
+  AppInfo getAppPackageInfo();
+
   void openAppInfo(String packageName);
   bool openApp(String packageName);
   void uninstallApp(String packageName);

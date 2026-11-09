@@ -24,3 +24,27 @@ class AppProvider extends InheritedWidget {
   bool updateShouldNotify(AppProvider oldWidget) =>
       notifier != oldWidget.notifier;
 }
+
+// Like to pass down single object
+class InheritedProvider<T> extends InheritedWidget {
+  const InheritedProvider({
+    super.key,
+    required super.child,
+    required this.notifier,
+  });
+
+  final T notifier;
+
+  static T of<T>(BuildContext context) {
+    final InheritedProvider<T>? result = context
+        .dependOnInheritedWidgetOfExactType<InheritedProvider<T>>();
+
+    assert(result != null, 'No InheritedProvider<$T> found in context');
+    return result!.notifier;
+  }
+
+  @override
+  bool updateShouldNotify(InheritedProvider<T> oldWidget) {
+    return notifier != oldWidget.notifier;
+  }
+}

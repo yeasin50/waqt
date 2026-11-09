@@ -66,17 +66,68 @@ class AppVisiblityModeAdapter extends TypeAdapter<AppVisiblityMode> {
   }
 }
 
+// ONE MORE adapter changes,  gonna generate
 class UserPreferenceAdapter extends TypeAdapter<UserPreference> {
   @override
-  int get typeId => 3;
+  int get typeId => 4;
 
+  //! NO, Don't follow my pattern; if you don;t understand how hive works internally
   @override
   UserPreference read(BinaryReader reader) {
-    return UserPreference(enableDoubleTapLock: reader.read());
+    return UserPreference(
+      enableDoubleTapLock: reader.readBool(),
+      search: SearchConfigs(
+        showSearch: reader.readBool(),
+        quickSearch: reader.readBool(),
+        autoShowKeyboard: reader.readBool(),
+        searchOrder: reader.readString(),
+        searchAtBottom: reader.readBool(),
+      ),
+      appearance: AppearanceSetting(
+        showStatusBar: reader.readBool(),
+        language: reader.readString(),
+        isDarkMode: reader.readBool(),
+        seedColor: reader.readInt(),
+        theme: reader.readString(),
+        useSystemFont: reader.readBool(),
+        customFont: reader.readString(),
+        itemSpacing: reader.readInt(),
+        fontSize: reader.readInt(),
+        showClock: reader.readBool(),
+        clockAlignment: reader.readInt(),
+        isLargeClock: reader.readBool(),
+        showDate: reader.readBool(),
+        appsNameAlignment: reader.readInt(),
+      ),
+      footerLeft: reader.readString(),
+      footerRight: reader.readString(),
+    );
   }
 
   @override
   void write(BinaryWriter writer, UserPreference obj) {
-    writer.write(obj.enableDoubleTapLock);
+    writer
+      ..writeBool(obj.enableDoubleTapLock)
+      ..writeBool(obj.search.showSearch)
+      ..writeBool(obj.search.quickSearch)
+      ..writeBool(obj.search.autoShowKeyboard)
+      ..writeString(obj.search.searchOrder)
+      ..writeBool(obj.search.searchAtBottom)
+      ..writeBool(obj.appearance.showStatusBar)
+      ..writeString(obj.appearance.language)
+      ..writeBool(obj.appearance.isDarkMode)
+      ..writeInt(obj.appearance.seedColor)
+      ..writeString(obj.appearance.theme)
+      ..writeBool(obj.appearance.useSystemFont)
+      ..writeString(obj.appearance.customFont)
+      ..writeInt(obj.appearance.itemSpacing)
+      ..writeInt(obj.appearance.fontSize)
+      ..writeBool(obj.appearance.showClock)
+      ..writeInt(obj.appearance.clockAlignment)
+      ..writeBool(obj.appearance.isLargeClock)
+      ..writeBool(obj.appearance.showDate)
+      ..writeInt(obj.appearance.appsNameAlignment)
+      ..writeString(obj.footerLeft)
+      ..writeString(obj.footerRight);
   }
 }

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'app_list_page.dart';
 import 'core/core.dart';
-import 'settings_page.dart';
-import 'widgets/app_option_bottom_sheet.dart';
-import 'widgets/app_search_field.dart';
-import 'widgets/app_tile.dart';
+import 'settings/settings_page.dart';
 import 'widgets/clock_view.dart';
 import 'widgets/favorite_app_list.dart';
 import 'widgets/footer_view.dart';
@@ -17,17 +15,30 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final PageController controller = PageController();
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.translucent,
+      behavior: .translucent,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: PageView(
-        physics: const BouncingScrollPhysics(),
-        onPageChanged: (page) {
-          if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
-        },
-        children: [_HomeView(), _AppListView()],
+      child: InheritedProvider<PageController>(
+        notifier: controller,
+        child: PageView(
+          physics: const BouncingScrollPhysics(),
+          controller: controller,
+          onPageChanged: (page) {
+            if (page == 0) FocusManager.instance.primaryFocus?.unfocus();
+          },
+          children: [_HomeView(), AppListView()],
+        ),
       ),
     );
   }
@@ -39,144 +50,52 @@ class _HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       body: ListenableBuilder(
         listenable: AppProvider.of(context).notifier,
         builder: (context, child) {
           final provider = AppProvider.of(context).notifier;
-          return GestureDetector(
-            behavior: .opaque,
-            onDoubleTap: provider.preference.enableDoubleTapLock
-                ? () => provider.lockScreen()
-                : null,
-            child: Padding(
-              padding: const .all(24.0),
-              child: Column(
-                crossAxisAlignment: .stretch,
-                children: [
-                  const Spacer(flex: 1),
-                  Expanded(
-                    flex: 2,
-                    child: Align(alignment: .centerLeft, child: ClockView()),
-                  ),
-                  // const Spacer(flex: 3),
+          final appearance = provider.preference.appearance;
+          final clockAlignment = appearance.clockAlignment.toDouble();
 
-                  Expanded(
-                    flex: 3,
-                    child: Align(
-                      alignment: .center,
-                      child: FavoriteAppList(),
-                    ), // I may  limit only to 5
-                  ), //TODO: fixed size %height
-                  Expanded(
-                    child: Align(alignment: .bottomCenter, child: FooterView()),
-                  ),
-                ],
+          return SafeArea(
+            child: GestureDetector(
+              behavior: .opaque,
+              onDoubleTap: provider.lockScreen,
+              onLongPress: () {
+                Navigator.of(context).push(SettingsPage.route());
+              },
+              child: Padding(
+                padding: const .all(24.0),
+                child: Column(
+                  crossAxisAlignment: .stretch,
+                  spacing: 16,
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Align(
+                        alignment: Alignment(clockAlignment, 0),
+                        child: appearance.showClock
+                            ? ClockView(showDate: appearance.showDate)
+                            : SizedBox.shrink(), //TODO: I would rather not depends on flex to show [FavoriteAppList]
+                      ),
+                    ),
+
+                    Expanded(
+                      flex: 4,
+                      child: Align(
+                        alignment: Alignment(0, -.1),
+                        child: SingleChildScrollView(child: FavoriteAppList()),
+                      ),
+                    ),
+
+                    Align(alignment: .bottomCenter, child: FooterView()),
+                  ],
+                ),
               ),
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _AppListView extends StatefulWidget {
-  const new();
-
-  @override
-  State<_AppListView> createState() => _AppListViewState();
-}
-
-class _AppListViewState extends State<_AppListView> {
-  final searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    searchController.addListener(() {
-      AppProvider.of(context).notifier.onSearch(searchController.text);
-    });
-  }
-
-  @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final style = TextTheme.of(context);
-
-    return Scaffold(
-      floatingActionButtonLocation: .centerDocked,
-      floatingActionButton: AppSearchField(controller: searchController),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverList.list(
-              children: [
-                SizedBox(
-                  height: 220,
-                  child: Align(
-                    alignment: Alignment(0, .25),
-                    child: Row(
-                      mainAxisAlignment: .spaceBetween,
-                      children: [
-                        SizedBox(width: 48),
-                        Text(
-                          "All Apps",
-                          style: style.headlineMedium?.copyWith(),
-                          textAlign: .center,
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.of(context).push(SettingsPage.route());
-                          },
-                          icon: Icon(Icons.settings_outlined),
-                          color: Colors.grey,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                ListenableBuilder(
-                  listenable: AppProvider.of(context).notifier,
-                  builder: (context, child) {
-                    final provider = AppProvider.of(context).notifier;
-
-                    return Column(
-                      children: [
-                        ...provider.filteredApps.map(
-                          (app) => AppTile(
-                            title: app.name,
-                            onTap: () {
-                              provider.launchApp(app);
-                              searchController.clear();
-                              // unFocuse again?
-                            },
-                            onLongPress: () {
-                              FocusManager.instance.primaryFocus?.unfocus();
-
-                              AppOptionBottomSheet.show(
-                                context: context,
-                                appInfo: app,
-                                provider: provider,
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-
-                SizedBox(height: 96 + 24),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }

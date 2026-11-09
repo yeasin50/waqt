@@ -33,7 +33,9 @@ class AppOptionBottomSheet extends StatelessWidget {
     final bool isAlreadyFavirate = provider.favoriteApps.contains(appInfo);
 
     return Padding(
-      padding: const .all(24.0),
+      padding:
+          EdgeInsets.all(24) +
+          EdgeInsets.only(bottom: MediaQuery.viewPaddingOf(context).bottom),
       child: Column(
         mainAxisSize: .min,
         crossAxisAlignment: .stretch,

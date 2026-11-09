@@ -8,6 +8,16 @@ import android.content.pm.PackageManager
 
 class AppManagerApiImpl(private val context: Context) : AppManagerApi {
 
+    override fun getAppPackageInfo(): AppInfo {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+
+        return AppInfo(
+            name = context.applicationInfo.loadLabel(context.packageManager).toString(),
+            packageName = context.packageName,
+            versionName = packageInfo.versionName ?: ""
+        )
+    }
+
     override fun openAppInfo(packageName: String) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.parse("package:$packageName")

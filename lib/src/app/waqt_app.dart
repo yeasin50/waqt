@@ -5,7 +5,6 @@ import '../core/services/app_changes_listner.dart';
 import '../core/services/apps_api.g.dart';
 import '../core/services/screen_lock_api.g.dart';
 import '../home_page.dart';
-import 'theme.dart';
 
 class WaqtApp extends StatefulWidget {
   const WaqtApp({super.key});
@@ -20,7 +19,7 @@ class _WaqtAppState extends State<WaqtApp> with WidgetsBindingObserver {
     AppService(),
     screenLockApi: ScreenLockApi(),
     appManagerApi: AppManagerApi(),
-  );
+  )..loadTheme();
 
   @override
   void initState() {
@@ -61,11 +60,18 @@ class _WaqtAppState extends State<WaqtApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return AppProvider(
       notifier: notifier,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Waqt',
-        theme: AppTheme().baseTheme(context),
-        home: HomeScreen(),
+      child: ValueListenableBuilder(
+        /// the issue I don't want to update eveything but doing it
+        /// the separation  is because might want to refactor in future
+        valueListenable: notifier.themeNotifier,
+        builder: (context, value, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Waqt',
+            theme: value,
+            home: HomeScreen(),
+          );
+        },
       ),
     );
   }

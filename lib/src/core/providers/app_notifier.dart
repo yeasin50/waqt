@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../core.dart';
 import '../services/apps_api.g.dart' hide AppInfo;
+import '../services/apps_api.g.dart' as apps_api;
+import '../services/logger.dart';
 import '../services/screen_lock_api.g.dart';
 
 /// the base notifier that will connect other mixin
@@ -45,6 +47,7 @@ abstract class AppNotifier extends ChangeNotifier {
     return UnmodifiableListView(sortedItems);
   }
 
+  /// TODO: specific error Type and create handler
   String _err = "";
   String get err => _err;
   void setErr(String msg) {
@@ -52,39 +55,47 @@ abstract class AppNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  late apps_api.AppInfo waqtPkg;
+  String get waqtPkgName => waqtPkg.packageName;
+  Future<void> _whoAmI() async {
+    waqtPkg = await appManagerApi.getAppPackageInfo();
+  }
+
   Future<void> getApps() async {
     try {
+      await _whoAmI(); // it really doesn't matter for tiny context call
+
+      // dart format off
       _err = "";
       //TODO: replace with pegion
       final result = await service.getInstalledApps();
-
       final configedApps = _db.getAppConfigs();
 
       final merged = <String, AppInfo>{};
+
       for (final app in result) {
-        final configed = configedApps.firstWhereOrNull(
-          (e) => e.packageName == app.packageName,
-        );
+        if (app.packageName == waqtPkgName) continue;
+
+        final configed = configedApps.firstWhereOrNull((e) => e.packageName == app.packageName);
         merged[app.packageName] = configed ?? app;
       }
 
       final visibilityCongfigs = _db.getVisiblityCongis();
       for (final v in visibilityCongfigs) {
         if (!merged.keys.contains(v.packageName)) continue;
-
-        merged[v.packageName] = merged[v.packageName]!.copyWith(
-          visiblityInfo: v,
-        );
+        merged[v.packageName] = merged[v.packageName]!.copyWith(visiblityInfo: v);
       }
-
+ 
+     // dart format on
       _apps
         ..clear()
         ..addAll(merged.values);
 
       notifyListeners();
-    } catch (e) {
+    } catch (e, st) {
       _apps.clear();
       _err = "faled to get apps";
+      AppLogger.log("app_notifier.get_apps", _err, st);
 
       notifyListeners();
     }
@@ -93,7 +104,10 @@ abstract class AppNotifier extends ChangeNotifier {
   Future<void> launchApp(AppInfo app) async {
     final hasLaunched = await appManagerApi.openApp(app.packageName);
 
-    if (!hasLaunched) setErr("failed to launch ${app.name}");
+    if (!hasLaunched) {
+      setErr("failed to launch ${app.name}");
+      AppLogger.log("app_notifier.launchApp", _err, null);
+    }
   }
 
   Future<void> openAppInfo(AppInfo app) async {

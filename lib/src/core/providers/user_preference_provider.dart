@@ -8,12 +8,51 @@ mixin UserPreferenceProvider on AppNotifier {
 
   void updatePreference(UserPreference pref) {
     _preference = pref;
+    db.updatePreference(pref);
     notifyListeners();
+  }
+
+  void updateAppearance({
+    bool? isDarkMode,
+    int? seedColor,
+    String? language,
+    bool? useSystemFont,
+    String? customFont,
+    int? itemSpacing,
+    int? fontSize,
+    bool? showClock,
+    int? clockAlignment,
+    bool? isLargeClock,
+    bool? showDate,
+    int? appsNameAlignment,
+  }) {
+    AppearanceSetting appearance = preference.appearance.copyWith();
+    final updateValue = appearance.copyWith(
+      isDarkMode: isDarkMode ?? appearance.isDarkMode,
+      seedColor: seedColor ?? appearance.seedColor,
+      language: language ?? appearance.language,
+      useSystemFont: useSystemFont ?? appearance.useSystemFont,
+      customFont: customFont ?? appearance.customFont,
+      itemSpacing: itemSpacing ?? appearance.itemSpacing,
+      fontSize: fontSize ?? appearance.fontSize,
+      showClock: showClock ?? appearance.showClock,
+      clockAlignment: clockAlignment ?? appearance.clockAlignment,
+      isLargeClock: isLargeClock ?? appearance.isLargeClock,
+      showDate: showDate ?? appearance.showDate,
+      appsNameAlignment: appsNameAlignment ?? appearance.appsNameAlignment,
+    );
+
+    _preference = _preference.copyWith(appearance: updateValue);
+    db.updatePreference(_preference);
+    notifyListeners();
+  }
+
+  void updateSearch(SearchConfigs pref) {
+    updatePreference(preference.copyWith(search: pref));
   }
 
   void toggleDoubleTapLoc(bool enable) {
     final updateValue = preference.copyWith(enableDoubleTapLock: enable);
-    db.updatePreference(updateValue);
     updatePreference(updateValue);
   }
 
@@ -27,5 +66,10 @@ mixin UserPreferenceProvider on AppNotifier {
 
   Future<void> requestDefaultLauncher() async {
     await appManagerApi.requestDefaultLauncher();
+  }
+
+  // ISSUE #22  FIXME: NOT SMOOTH +  toggle initial value
+  void _toggleStatusBar(bool show) {
+    throw UnimplementedError();
   }
 }
