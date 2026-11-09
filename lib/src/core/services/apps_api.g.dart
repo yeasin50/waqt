@@ -206,8 +206,8 @@ class AppManagerApi {
   final String pigeonVar_messageChannelSuffix;
 
 
-  Future<String> getAppPackageName() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.waqt.AppManagerApi.getAppPackageName$pigeonVar_messageChannelSuffix';
+  Future<AppInfo> getAppPackageInfo() async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.waqt.AppManagerApi.getAppPackageInfo$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -222,7 +222,7 @@ class AppManagerApi {
         isNullValid: false,
     )
     ;
-    return pigeonVar_replyValue! as String;
+    return pigeonVar_replyValue! as AppInfo;
   }
 
   Future<void> openAppInfo(String packageName) async {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../core.dart';
 import '../services/apps_api.g.dart' hide AppInfo;
+import '../services/apps_api.g.dart' as apps_api;
 import '../services/logger.dart';
 import '../services/screen_lock_api.g.dart';
 
@@ -47,16 +48,17 @@ abstract class AppNotifier extends ChangeNotifier {
   }
 
   /// TODO: specific error Type and create handler
-  String _err = "test error view";
+  String _err = "";
   String get err => _err;
   void setErr(String msg) {
     _err = msg;
     notifyListeners();
   }
 
-  late String waqtPkgName;
+  late apps_api.AppInfo waqtPkg;
+  String get waqtPkgName => waqtPkg.packageName;
   Future<void> _whoAmI() async {
-    waqtPkgName = await appManagerApi.getAppPackageName();
+    waqtPkg = await appManagerApi.getAppPackageInfo();
   }
 
   Future<void> getApps() async {
