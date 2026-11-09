@@ -1,6 +1,6 @@
 name: waqt
 description: "Everything, in its time."
-publish_to: 'none'
+publish_to: 'https://github.com/yeasin50/waqt'
 version: 0.1.0+1
 
 environment:
@@ -14,6 +14,7 @@ dependencies:
   hive_ce: ^2.20.2
   hive_flutter: ^1.1.0
   path_provider: ^2.1.6
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:

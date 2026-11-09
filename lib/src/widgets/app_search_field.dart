@@ -29,7 +29,6 @@ class _AppSearchFieldState extends State<AppSearchField> {
   void pageListener() {
     assert(widget.autoFocus);
 
-    //TODO: test on release +  check dragEnd and then show
     if (!focusNode.hasFocus && pageContoller.page! > .7) {
       focusNode.requestFocus();
     }
@@ -40,7 +39,7 @@ class _AppSearchFieldState extends State<AppSearchField> {
     super.initState();
     if (!widget.autoFocus) return;
 
-    // can we we work  with NotificationListener instead
+    // can we work  with NotificationListener instead
     WidgetsBinding.instance.addPostFrameCallback((_) {
       pageContoller.addListener(pageListener);
     });

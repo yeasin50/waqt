@@ -5,7 +5,6 @@ import '../core/services/app_changes_listner.dart';
 import '../core/services/apps_api.g.dart';
 import '../core/services/screen_lock_api.g.dart';
 import '../home_page.dart';
-import 'theme.dart';
 
 class WaqtApp extends StatefulWidget {
   const WaqtApp({super.key});
