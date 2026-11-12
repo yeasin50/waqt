@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class ColorPickerRow extends StatelessWidget {
   const new({
@@ -17,6 +18,38 @@ class ColorPickerRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = brightness == .dark;
+
+    Future<void> onColorPick() async {
+      /// ...
+      Color color = selectedColor;
+      final pickedColor = await showDialog(
+        context: context,
+        builder: (context) {
+          return SingleChildScrollView(
+            child: AlertDialog(
+              scrollable: false,
+              content: ColorPicker(
+                pickerColor: selectedColor,
+                onColorChanged: (v) => color = v,
+              ),
+              actions: <Widget>[
+                ElevatedButton(
+                  child: const Text('save'),
+                  onPressed: () => Navigator.of(context).pop(color),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+
+      if (pickedColor == null) return;
+      onTap(brightness, pickedColor);
+    }
+
+    final bool isCustomColor = !colors.any(
+      (e) => e.toARGB32() == selectedColor.toARGB32(),
+    );
 
     return Row(
       spacing: 8,
@@ -37,6 +70,8 @@ class ColorPickerRow extends StatelessWidget {
                   final shape = e == selectedColor
                       ? CircleBorder(side: .new(color: ColorScheme.of(context).surfaceTint))
                       : null;
+
+                  // dart format on
                   return SizedBox.square(
                     dimension: 40,
                     child: GestureDetector(
@@ -52,6 +87,16 @@ class ColorPickerRow extends StatelessWidget {
                     ),
                   );
                 }),
+
+                isCustomColor
+                    ? IconButton.outlined(
+                        onPressed: onColorPick,
+                        icon: Icon(Icons.color_lens),
+                      )
+                    : IconButton(
+                        onPressed: onColorPick,
+                        icon: Icon(Icons.color_lens),
+                      ),
               ],
             ),
           ),
