@@ -18,6 +18,7 @@ class SectionBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .stretch,
+      spacing: 4,
       children: [
         Padding(
           padding: const .only(left: 16.0),
@@ -28,6 +29,7 @@ class SectionBuilder extends StatelessWidget {
           onTap: onTap,
           child: Material(
             shape: RoundedRectangleBorder(borderRadius: .circular(9)),
+            // color: ColorScheme.of(context).surfaceContainerLow,
             child: Padding(
               padding: const .symmetric(horizontal: 16.0, vertical: 8),
               child: Column(
