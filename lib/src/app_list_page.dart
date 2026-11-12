@@ -46,44 +46,60 @@ class _AppListViewState extends State<AppListView> {
         }
 
         return Scaffold(
-          bottomNavigationBar: searchPref.showSearch
-              ? AppSearchField(
-                  controller: searchController,
-                  autoFocus: searchPref.autoShowKeyboard,
-                )
-              : null,
           body: SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverList.list(
-                  children: [
-                    _AppListHeaderView(),
-
-                    Column(
+            child: Stack(
+              children: [
+                CustomScrollView(
+                  slivers: [
+                    SliverList.list(
                       children: [
-                        ...apps.map(
-                          (app) => AppTile(
-                            title: app.name,
-                            onTap: () {
-                              provider.launchApp(app);
-                              searchController.clear();
-                              // unFocuse again?
-                            },
-                            onLongPress: () {
-                              FocusManager.instance.primaryFocus?.unfocus();
-                              AppOptionBottomSheet.show(
-                                context: context,
-                                appInfo: app,
-                                provider: provider,
-                              );
-                            },
+                        SizedBox(height: 120),
+                        _AppListHeaderView(),
+                        SizedBox(height: 24),
+                        if (searchPref.showSearch && !searchPref.searchAtBottom)
+                          AppSearchField(
+                            controller: searchController,
+                            autoFocus: searchPref.autoShowKeyboard,
                           ),
+
+                        Column(
+                          children: [
+                            ...apps.map(
+                              (app) => AppTile(
+                                title: app.name,
+                                onTap: () {
+                                  provider.launchApp(app);
+                                  searchController.clear();
+                                  // unFocuse again?
+                                },
+                                onLongPress: () {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  AppOptionBottomSheet.show(
+                                    context: context,
+                                    appInfo: app,
+                                    provider: provider,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
+                        SizedBox(height: 96),
                       ],
                     ),
-                    SizedBox(height: 96),
                   ],
                 ),
+
+                if (searchPref.showSearch && searchPref.searchAtBottom)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: AppSearchField(
+                      controller: searchController,
+                      autoFocus: searchPref.autoShowKeyboard,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -98,29 +114,23 @@ class _AppListHeaderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 220,
-      child: Align(
-        alignment: Alignment(0, .25),
-        child: Row(
-          mainAxisAlignment: .spaceBetween,
-          children: [
-            SizedBox(width: 48),
-            Text(
-              "All Apps",
-              style: TextTheme.of(context).headlineMedium?.copyWith(),
-              textAlign: .center,
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(SettingsPage.route());
-              },
-              icon: Icon(Icons.settings_outlined),
-              color: Colors.grey,
-            ),
-          ],
+    return Row(
+      mainAxisAlignment: .spaceBetween,
+      children: [
+        SizedBox(width: 48),
+        Text(
+          "All Apps",
+          style: TextTheme.of(context).headlineMedium?.copyWith(),
+          textAlign: .center,
         ),
-      ),
+        IconButton(
+          onPressed: () {
+            Navigator.of(context).push(SettingsPage.route());
+          },
+          icon: Icon(Icons.settings_outlined),
+          color: Colors.grey,
+        ),
+      ],
     );
   }
 }
