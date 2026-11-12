@@ -4,6 +4,7 @@ import '../core/core.dart';
 import '../favorite_apps_page.dart';
 import '../widgets/app_tile.dart' show AppTile;
 import 'appearance_settings.dart';
+import 'footer_setting_view.dart';
 import 'widgets/lock_permission_tile.dart';
 import 'search_settings_view.dart';
 
@@ -47,7 +48,7 @@ class _SettingsPageState extends State<SettingsPage>
   Widget build(BuildContext context) {
     final provider = AppProvider.of(context).notifier;
 
-    const spacer = SizedBox(height: 32);
+    const spacer = SizedBox(height: 40);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -91,7 +92,8 @@ class _SettingsPageState extends State<SettingsPage>
                     SearcSettingsView(),
                     spacer,
                     AppearanceSettings(),
-
+                    spacer,
+                    FooterSettingsView(),
                     spacer,
                   ],
                 ),

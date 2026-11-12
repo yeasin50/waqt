@@ -9,6 +9,7 @@ class UserPreference {
 
     this.footerLeft = '',
     this.footerRight = '',
+    this.footerRowAlingment = 0,
   });
 
   final bool enableDoubleTapLock;
@@ -19,6 +20,7 @@ class UserPreference {
   // Footer labels
   final String footerLeft;
   final String footerRight;
+  final int footerRowAlingment;
 
   static const UserPreference empty = UserPreference();
 
@@ -28,6 +30,7 @@ class UserPreference {
     AppearanceSetting? appearance,
     String? footerLeft,
     String? footerRight,
+    int? footerRowAlingment,
   }) {
     return UserPreference(
       enableDoubleTapLock: enableDoubleTapLock ?? this.enableDoubleTapLock,
@@ -35,6 +38,7 @@ class UserPreference {
       appearance: appearance ?? this.appearance,
       footerLeft: footerLeft ?? this.footerLeft,
       footerRight: footerRight ?? this.footerRight,
+      footerRowAlingment: footerRowAlingment ?? this.footerRowAlingment,
     );
   }
 
@@ -43,6 +47,7 @@ class UserPreference {
     'appearance': appearance.toString(),
     'footerLeft': footerLeft,
     'footerRight': footerRight,
+    'footerRowAlingment': footerRowAlingment,
   };
 
   @override
