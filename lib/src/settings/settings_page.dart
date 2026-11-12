@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/core.dart';
 import '../favorite_apps_page.dart';
+import '../widgets/about_card.dart';
 import '../widgets/app_tile.dart' show AppTile;
 import 'appearance_settings.dart';
 import 'widgets/lock_permission_tile.dart';
@@ -92,6 +93,8 @@ class _SettingsPageState extends State<SettingsPage>
                     spacer,
                     AppearanceSettings(),
 
+                    spacer,
+                    AboutCard(),
                     spacer,
                   ],
                 ),
