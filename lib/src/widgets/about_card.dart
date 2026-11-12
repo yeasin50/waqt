@@ -39,10 +39,7 @@ class AboutCard extends StatelessWidget {
               children: [
                 SizedBox.square(
                   dimension: 88,
-                  child: ClipRRect(
-                    borderRadius: .circular(24),
-                    child: Placeholder(), //TODO: logo
-                  ),
+                  child: ClipOval(child: Image.asset("assets/logo.png")),
                 ),
 
                 Column(
