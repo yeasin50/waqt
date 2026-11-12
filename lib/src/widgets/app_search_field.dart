@@ -19,7 +19,8 @@ class AppSearchField extends StatefulWidget {
   State<AppSearchField> createState() => _AppSearchFieldState();
 }
 
-class _AppSearchFieldState extends State<AppSearchField> {
+class _AppSearchFieldState extends State<AppSearchField>
+    with WidgetsBindingObserver {
   final FocusNode focusNode = FocusNode();
 
   late PageController pageContoller = InheritedProvider.of<PageController>(
@@ -37,6 +38,8 @@ class _AppSearchFieldState extends State<AppSearchField> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     if (!widget.autoFocus) return;
 
     // can we work  with NotificationListener instead
@@ -48,20 +51,27 @@ class _AppSearchFieldState extends State<AppSearchField> {
   late double width = width = MediaQuery.sizeOf(context).width;
 
   bool isKeyboardOpened = false;
+
+  /// The reason I am using [didChangeMetrics] over [didChangeDependencies] is because
+  /// it was failing to listen keyboard visibility when  I moved [AppSearchField] from  `bottomNavBar` into Stack
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void didChangeMetrics() {
+    // dart format off
+    final bottom = WidgetsBinding.instance.platformDispatcher
+        .views.first.viewInsets.bottom;
 
-    width = MediaQuery.sizeOf(context).width;
-
-    final opened = MediaQuery.viewInsetsOf(context).bottom > 0;
-    if (isKeyboardOpened != opened) isKeyboardOpened = opened;
-    if (focusNode.hasFocus && !isKeyboardOpened) focusNode.unfocus();
+    final visible = bottom > 0;
+    if (isKeyboardOpened != visible) {
+      setState(() => isKeyboardOpened = visible);
+      if (!isKeyboardOpened) focusNode.unfocus();
+    }
   }
+
 
   @override
   void dispose() {
     focusNode.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -78,13 +88,16 @@ class _AppSearchFieldState extends State<AppSearchField> {
       gradient: LinearGradient(
         begin: .topCenter,
         end: .bottomCenter,
-        colors: [colors.surface.withAlpha(10), colors.surface],
+        colors: [colors.surface.withValues(alpha: .1), colors.surface],
       ),
     );
+
+    print(width);
+
     // dart format off
     return AnimatedPadding(
       duration: .zero,
-      padding: .only(bottom: 24 + max(viewPadding, bottomPadding)),
+      padding: .only(bottom: max(viewPadding, bottomPadding)),
       child: GestureDetector(
         onTap: () {
           final primaryFocus = FocusManager.instance.primaryFocus;
@@ -97,8 +110,9 @@ class _AppSearchFieldState extends State<AppSearchField> {
         child: Container(
           width: width,
           alignment: .center,
-          height: 56,
+          height: 56+24+8,//height+ paddings
           decoration: decoration,
+          padding: .only(bottom: 24, top: 8),
           child: AnimatedContainer(
             duration: Durations.short3,
             width: (isKeyboardOpened ? .85 : .45) * width,
