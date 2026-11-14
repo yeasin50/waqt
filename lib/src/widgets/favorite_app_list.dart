@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/core.dart';
+import '../favorite_apps_page.dart';
 import 'app_option_bottom_sheet.dart';
 import 'app_tile.dart';
 
@@ -46,29 +47,37 @@ class _EmptyFavoriteList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: .stretch,
-      mainAxisSize: .min,
-      children: [
-        Text(
-          'YOUR SPACE',
-          style: TextStyle(
-            fontSize: 11,
-            letterSpacing: 3,
-            color: Colors.white.withValues(alpha: 0.4),
-          ),
-        ),
+    final style = TextTheme.of(context);
 
-        const SizedBox(height: 22),
-
-        Text(
-          'Nothing here. Yet.',
-          style: TextStyle(
-            fontSize: 17,
-            color: Colors.white.withValues(alpha: 0.75),
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(FavoriteAppsPage.route());
+      },
+      onLongPress: () {}, // This is intentional, It consume parent onLongPress
+      child: Column(
+        crossAxisAlignment: .stretch,
+        mainAxisSize: .min,
+        children: [
+          Text(
+            'YOUR SPACE',
+            style: style.bodyMedium?.copyWith(
+              fontSize: 11,
+              letterSpacing: 3,
+              color: style.bodyMedium?.color?.withValues(alpha: 0.5),
+            ),
           ),
-        ),
-      ],
+
+          const SizedBox(height: 22),
+
+          Text(
+            'Nothing here. Yet.',
+            style: style.bodyLarge?.copyWith(
+              fontSize: 17,
+              color: style.labelLarge?.color?.withValues(alpha: 0.75),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
