@@ -1,6 +1,7 @@
 name: waqt
-description: "Everything, in its time."
-publish_to: 'https://github.com/yeasin50/waqt'
+description: "Minimial tedious App launcher. Everything, in its time."
+publish_to: none
+repository: https://github.com/yeasin50/waqt
 version: 0.1.0+1
 
 environment:

@@ -4,7 +4,7 @@ import 'package:pigeon/pigeon.dart';
   PigeonOptions(
     dartOut: 'lib/src/core/services/apps_api.g.dart',
     kotlinOut: 'android/app/src/main/kotlin/com/example/waqt/AppsApi.g.kt',
-    kotlinOptions: KotlinOptions(package: 'com.example.waqt'),
+    kotlinOptions: KotlinOptions(package: 'com.mdyeasinsheikh.waqt'),
   ),
 )
 class AppInfo {

@@ -1,4 +1,4 @@
-package com.example.waqt
+package com.mdyeasinsheikh.waqt
 
 import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent

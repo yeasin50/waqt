@@ -1,4 +1,4 @@
-package com.example.waqt
+package com.mdyeasinsheikh.waqt
 
 import android.content.Context
 import android.content.Intent
