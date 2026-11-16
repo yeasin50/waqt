@@ -76,17 +76,17 @@ class AppOptionBottomSheet extends StatelessWidget {
                     Navigator.of(context).pop();
                   },
                 ),
-                AppTile(
-                  title: "Visibility config",
-                  titleAlign: .start,
-                  onTap: () {
-                    final route = AppVisiblityConfigPage.route(
-                      appInfo,
-                      provider,
-                    );
-                    Navigator.of(context).pushReplacement(route);
-                  },
-                ),
+                // AppTile(
+                //   title: "Visibility config",
+                //   titleAlign: .start,
+                //   onTap: () {
+                //     final route = AppVisiblityConfigPage.route(
+                //       appInfo,
+                //       provider,
+                //     );
+                //     Navigator.of(context).pushReplacement(route);
+                //   },
+                // ),
                 AppTile(
                   title: "App info",
                   titleAlign: .start,
