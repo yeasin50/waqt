@@ -1,0 +1,78 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*' 
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    name: Build Signed APKs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Decode Release Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/release.jks
+          cat <<EOF > android/key.properties
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=release.jks
+          EOF
+
+      - name: Build Universal APK
+        run: flutter build apk --release
+
+      - name: Build Split-per-ABI APKs
+        run: flutter build apk --release --split-per-abi
+
+      - name: Rename APKs with version tag
+        run: |
+          VERSION=${GITHUB_REF_NAME}
+          mkdir -p release-apks
+          cp build/app/outputs/flutter-apk/app-release.apk release-apks/waqt-${VERSION}-universal.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk release-apks/waqt-${VERSION}-arm64-v8a.apk
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk release-apks/waqt-${VERSION}-armeabi-v7a.apk
+          cp build/app/outputs/flutter-apk/app-x86_64-release.apk release-apks/waqt-${VERSION}-x86_64.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Waqt ${{ github.ref_name }}
+          generate_release_notes: true # Automatically appends the commit changelog
+          body: |
+            ## Which APK should I download?
+            * **`waqt-${{ github.ref_name }}-arm64-v8a.apk`** — Recommended for almost all modern Android phones (smaller file size).
+            * **`waqt-${{ github.ref_name }}-armeabi-v7a.apk`** — For older 32-bit Android devices.
+            * **`waqt-${{ github.ref_name }}-x86_64.apk`** — For Android emulators or x86 tablets.
+            * **`waqt-${{ github.ref_name }}-universal.apk`** — Works on any Android device if you aren't sure which architecture your phone uses.
+          files: release-apks/*.apk
