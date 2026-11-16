@@ -1,4 +1,4 @@
-package com.example.waqt
+package com.mdyeasinsheikh.waqt
 
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName

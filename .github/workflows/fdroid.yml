@@ -1,0 +1,56 @@
+name: Update F-Droid Metadata
+
+on:
+  # push:
+  #   branches:
+  #     - release
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  update-fdroid:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Waqt
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Clone F-Droid Data
+        env:
+          TOKEN: ${{ secrets.GITLAB_FDROID_TOKEN }}
+        run: |
+          git clone https://oauth2:${TOKEN}@gitlab.com/yeasin50/fdroiddata.git fdroiddata
+
+      - name: Update metadata commit
+        working-directory: fdroiddata
+        env:
+          COMMIT: ${{ github.sha }}
+        run: |
+          sed -i "s/^commit: .*/commit: $COMMIT/" \
+            metadata/com.mdyeasinsheikh.waqt.yml
+
+      - name: Commit metadata
+        working-directory: fdroiddata
+        run: |
+          git config user.name "Waqt GitHub Actions"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add metadata/com.mdyeasinsheikh.waqt.yml
+
+          if git diff --cached --quiet; then
+            echo "No metadata changes"
+            exit 0
+          fi
+
+          git commit -m "Update Waqt source commit"
+          git push origin HEAD:master
+
+      - name: Summary
+        run: |
+          echo "F-Droid metadata updated successfully."
+          echo "Source commit: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"

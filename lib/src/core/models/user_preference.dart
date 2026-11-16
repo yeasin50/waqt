@@ -7,8 +7,8 @@ class UserPreference {
     this.search = const SearchConfigs(),
     this.appearance = const AppearanceSetting(),
 
-    this.footerLeft = '',
-    this.footerRight = '',
+    this.footerLeft = 'Waqt',
+    this.footerRight = 'Everything, in its time',
     this.footerRowAlingment = 0,
   });
 

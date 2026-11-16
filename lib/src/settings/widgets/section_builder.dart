@@ -25,7 +25,7 @@ class SectionBuilder extends StatelessWidget {
           child: Text(label, style: TextTheme.of(context).titleMedium),
         ),
 
-        GestureDetector(
+        InkWell(
           onTap: onTap,
           child: Material(
             shape: RoundedRectangleBorder(borderRadius: .circular(9)),
